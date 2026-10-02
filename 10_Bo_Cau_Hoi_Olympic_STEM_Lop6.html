@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bộ Đề Trắc Nghiệm Olympic STEM Lớp 6 — Eco-Bot</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; color: black !important; }
+      .quiz-card { border: 1px solid #ccc !important; box-shadow: none !important; page-break-inside: avoid; }
+      .ans-key { display: block !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased py-8 px-4 font-sans">
+  <div class="max-w-4xl mx-auto space-y-6">
+
+    <!-- HEADER BANNER -->
+    <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-700 text-white rounded-2xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
+      <div class="relative z-10">
+        <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+          🏅 STEM OLYMPICS • KHỐI 6
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          BỘ CÂU HỎI THỬ THÁCH OLYMPIC STEM
+        </h1>
+        <p class="text-emerald-100 text-sm sm:text-base mt-2 max-w-2xl">
+          Chủ đề: <b>Nông Nghiệp Thông Minh & Robot Tái Chế Eco-Bot</b>. 
+          Tích hợp liên môn Khoa học tự nhiên 6, Công nghệ 6, Tin học 6 và Toán 6.
+        </p>
+        <div class="mt-4 flex flex-wrap items-center gap-3 no-print">
+          <div class="bg-black/25 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+            ⏱️ Thời gian: 15 phút
+          </div>
+          <div class="bg-black/25 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+            📝 10 câu trắc nghiệm
+          </div>
+          <div id="scoreBadge" class="bg-amber-400 text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm">
+            ⭐ Điểm số: <span id="currentScore">0</span> / 10
+          </div>
+          <button onclick="window.print()" class="ml-auto px-4 py-1.5 bg-white text-emerald-800 hover:bg-emerald-50 rounded-lg text-xs font-bold shadow transition flex items-center gap-1.5">
+            🖨️ In đề thi / Xuất PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ CONTAINER -->
+    <div id="quizContainer" class="space-y-4"></div>
+
+    <!-- NÚT NỘP BÀI / RESET -->
+    <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm no-print">
+      <button onclick="resetQuiz()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg transition">
+        ↺ Làm lại từ đầu
+      </button>
+      <button onclick="toggleAnswerKey()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow transition">
+        📖 Xem / Ẩn bảng đáp án chi tiết
+      </button>
+    </div>
+
+    <!-- BẢNG ĐÁP ÁN VÀ LỜI GIẢI CHI TIẾT -->
+    <div id="answerKeyBox" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-md space-y-4 ans-key">
+      <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2 border-b pb-3">
+        📋 BẢNG ĐÁP ÁN & LỜI GIẢI CHI TIẾT DÀNH CHO GIÁO VIÊN VÀ HỌC SINH
+      </h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-700 border-collapse">
+          <thead>
+            <tr class="bg-slate-100 text-slate-900 border-b border-slate-200">
+              <th class="p-2.5 font-bold w-12 text-center">Câu</th>
+              <th class="p-2.5 font-bold w-16 text-center">Đáp án</th>
+              <th class="p-2.5 font-bold w-28">Môn tích hợp</th>
+              <th class="p-2.5 font-bold">Giải thích cốt lõi kiến thức</th>
+            </tr>
+          </thead>
+          <tbody id="answerTableBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const QUESTIONS = [
+      {
+        id: 1,
+        pillar: "Khoa học (Science)",
+        pillarColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
+        q: "Cây trồng trong vườn thực nghiệm cần nước và ánh sáng mặt trời để thực hiện quá trình sinh học quan trọng nào giúp cây tự tổng hợp chất hữu cơ nuôi sống cơ thể?",
+        options: [
+          { key: "A", text: "Quá trình hô hấp tế bào" },
+          { key: "B", text: "Quá trình quang hợp" },
+          { key: "C", text: "Quá trình thoát hơi nước qua lá" },
+          { key: "D", text: "Quá trình nảy mầm" }
+        ],
+        ans: "B",
+        exp: "Nhờ diệp lục trong lá, nước từ rễ và khí CO2 từ không khí dưới ánh nắng mặt trời, cây thực hiện quang hợp tạo ra tinh bột và giải phóng oxy."
+      },
+      {
+        id: 2,
+        pillar: "Kỹ thuật (Engineering)",
+        pillarColor: "bg-amber-100 text-amber-800 border-amber-300",
+        q: "Khi chế tạo robot làm vườn Eco-Bot hoạt động ngoài trời, tại sao các bạn học sinh nên chọn hộp nhựa PP (Polypropylene) làm thân xe thay vì dùng thùng bìa carton?",
+        options: [
+          { key: "A", text: "Hộp nhựa PP nhẹ hơn và có thể ăn được" },
+          { key: "B", text: "Hộp nhựa PP chống thấm nước tốt, bảo vệ an toàn bo mạch điện khi gặp trời mưa hoặc nước tưới" },
+          { key: "C", text: "Bìa carton dẫn điện tốt hơn hộp nhựa" },
+          { key: "D", text: "Hộp nhựa PP hấp thụ ánh sáng mặt trời làm mát động cơ" }
+        ],
+        ans: "B",
+        exp: "Nhựa PP (số 5) chống thấm nước 100%, có gioăng cao su khép kín giúp bo mạch Arduino và pin bên trong không bị chập cháy khi ẩm ướt."
+      },
+      {
+        id: 3,
+        pillar: "Khoa học (Science)",
+        pillarColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
+        q: "Năng lượng điện giúp robot Eco-Bot sạc pin hoạt động được tạo ra từ tấm pin mặt trời gắn trên lưng robot. Đây là dạng năng lượng gì?",
+        options: [
+          { key: "A", text: "Năng lượng hóa thạch" },
+          { key: "B", text: "Năng lượng tái tạo (năng lượng sạch)" },
+          { key: "C", text: "Năng lượng hạt nhân" },
+          { key: "D", text: "Năng lượng nhiệt điện than" }
+        ],
+        ans: "B",
+        exp: "Ánh sáng mặt trời là nguồn tài nguyên vô tận trong tự nhiên, không thải ra khí nhà kính CO2, thuộc nhóm năng lượng tái tạo."
+      },
+      {
+        id: 4,
+        pillar: "Công nghệ & Tin học (Technology)",
+        pillarColor: "bg-sky-100 text-sky-800 border-sky-300",
+        q: "Bộ phận nào sau đây được ví như 'bộ não' của robot Eco-Bot, có nhiệm vụ tiếp nhận dữ liệu từ cảm biến độ ẩm đất và ra lệnh kích hoạt máy bơm nước?",
+        options: [
+          { key: "A", text: "Động cơ giảm tốc" },
+          { key: "B", text: "Cảm biến độ ẩm đất" },
+          { key: "C", text: "Bo mạch vi điều khiển (như Arduino Uno hoặc Micro:bit)" },
+          { key: "D", text: "Bình chứa nước 500ml" }
+        ],
+        ans: "C",
+        exp: "Bo mạch vi điều khiển chứa vi xử lý được nạp chương trình logic: 'Nếu độ ẩm < 40% thì bật bơm nước', đóng vai trò bộ não điều hành."
+      },
+      {
+        id: 5,
+        pillar: "Kỹ thuật & Vật lý (Engineering)",
+        pillarColor: "bg-amber-100 text-amber-800 border-amber-300",
+        q: "Robot Eco-Bot di chuyển trên nền đất vườn ẩm ướt bằng hệ thống bánh xích (ghép từ nắp chai nhựa và dây cao su) thay vì bánh xe tròn nhỏ thông thường. Tác dụng chính của bánh xích là gì?",
+        options: [
+          { key: "A", text: "Tăng diện tích tiếp xúc với mặt đất để giảm áp suất tác dụng lên đất, giúp xe không bị lún sa lầy" },
+          { key: "B", text: "Giúp robot bay được qua các rãnh luống rau" },
+          { key: "C", text: "Giúp robot chạy nhanh gấp 10 lần so với bánh xe tròn" },
+          { key: "D", text: "Giúp làm tơi xốp đất mà không cần dùng cuốc xới" }
+        ],
+        ans: "A",
+        exp: "Theo công thức áp suất p = F / S, khi diện tích tiếp xúc S tăng lên thì áp suất p tác dụng xuống mặt bùn giảm đi, tránh cho robot bị sa lầy."
+      },
+      {
+        id: 6,
+        pillar: "Toán học (Mathematics)",
+        pillarColor: "bg-purple-100 text-purple-800 border-purple-300",
+        q: "Bình nước trên thân robot có dung tích ban đầu là 450 ml. Mỗi lần tưới cho một gốc cây rau, cánh tay robot phun ra đúng 25 ml nước. Sau khi robot đã tưới xong cho 4 gốc cây, lượng nước còn lại trong bình là bao nhiêu?",
+        options: [
+          { key: "A", text: "100 ml" },
+          { key: "B", text: "350 ml" },
+          { key: "C", text: "375 ml" },
+          { key: "D", text: "400 ml" }
+        ],
+        ans: "B",
+        exp: "Lượng nước tiêu thụ cho 4 cây là: 25 × 4 = 100 (ml). Lượng nước còn lại trong can: 450 - 100 = 350 (ml)."
+      },
+      {
+        id: 7,
+        pillar: "Công nghệ (Technology)",
+        pillarColor: "bg-sky-100 text-sky-800 border-sky-300",
+        q: "Cảm biến độ ẩm đất cắm dưới gốc rau gửi tín hiệu về màn hình hiển thị con số 18% (trong khi độ ẩm lý tưởng của đất là từ 60% đến 80%). Theo em, robot Eco-Bot nên tự động thực hiện hành động nào sau đây?",
+        options: [
+          { key: "A", text: "Ngắt nguồn điện đi ngủ vì đất đã đủ ẩm" },
+          { key: "B", text: "Kích hoạt máy bơm và hạ cánh tay tưới nước ngay cho cây vì đất đang bị khô hạn nghiêm trọng" },
+          { key: "C", text: "Bật quạt thông gió để làm đất khô ráo hơn" },
+          { key: "D", text: "Đổi hướng chạy ra khỏi luống rau" }
+        ],
+        ans: "B",
+        exp: "Độ ẩm 18% cảnh báo đất đang thiếu nước trầm trọng. Hệ thống tự động IoT sẽ ngay lập tức bật vòi phun để giải cứu cây trồng."
+      },
+      {
+        id: 8,
+        pillar: "Kỹ thuật (Engineering)",
+        pillarColor: "bg-amber-100 text-amber-800 border-amber-300",
+        q: "Cánh tay cơ khí nâng hạ vòi tưới của Eco-Bot được ghép từ các que kem gỗ liên kết bằng chốt quay (khớp bản lề) và chịu lực kéo từ động cơ servo. Đây là ứng dụng của loại máy cơ đơn giản nào?",
+        options: [
+          { key: "A", text: "Mặt phẳng nghiêng" },
+          { key: "B", text: "Ròng rọc cố định" },
+          { key: "C", text: "Đòn bẩy" },
+          { key: "D", text: "Nêm chêm" }
+        ],
+        ans: "C",
+        exp: "Cánh tay que kem quay quanh trục cố định (điểm tựa) để truyền lực nâng hạ vòi tưới là ứng dụng trực tiếp của đòn bẩy trong đời sống."
+      },
+      {
+        id: 9,
+        pillar: "Toán học (Mathematics)",
+        pillarColor: "bg-purple-100 text-purple-800 border-purple-300",
+        q: "Độ ẩm đo được của luống rau số 1 lúc sáng sớm là 25%. Sau khi robot Eco-Bot thực hiện chương trình tưới nhỏ giọt, độ ẩm của luống đất đã tăng thêm 38%. Hỏi độ ẩm mới của luống rau lúc này là bao nhiêu phần trăm?",
+        options: [
+          { key: "A", text: "53%" },
+          { key: "B", text: "63%" },
+          { key: "C", text: "73%" },
+          { key: "D", text: "88%" }
+        ],
+        ans: "B",
+        exp: "Phép cộng số phần trăm: 25% + 38% = 63% (nằm trong ngưỡng độ ẩm sinh trưởng lý tưởng từ 60% đến 80%)."
+      },
+      {
+        id: 10,
+        pillar: "Môi trường & Xã hội (STEM Impact)",
+        pillarColor: "bg-teal-100 text-teal-800 border-teal-300",
+        q: "Dự án chế tạo Robot Eco-Bot từ nắp chai nhựa bỏ đi, can nước ngọt 500ml cũ và que kem gỗ đã qua sử dụng thể hiện nguyên tắc bảo vệ môi trường nào sau đây?",
+        options: [
+          { key: "A", text: "Nguyên tắc 3R: Giảm thiểu (Reduce) – Tái sử dụng (Reuse) – Tái chế (Recycle)" },
+          { key: "B", text: "Tăng cường tiêu thụ đồ nhựa dùng một lần" },
+          { key: "C", text: "Thu gom rác thải nhựa để đốt ngoài trời lấy nhiệt" },
+          { key: "D", text: "Chôn lấp rác thải nhựa trực tiếp dưới luống đất trồng rau" }
+        ],
+        ans: "A",
+        exp: "Nguyên tắc 3R là kim chỉ nam trong quản lý rác thải hiện đại: Giảm phát thải (Reduce), Tái sử dụng chai lọ cũ (Reuse) và Tái chế thành sản phẩm robot hữu ích (Recycle)."
+      }
+    ];
+
+    let userAnswers = {};
+
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+
+      QUESTIONS.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = "quiz-card bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm transition hover:shadow-md space-y-3";
+        card.id = `qCard_${item.id}`;
+
+        let optionsHtml = '';
+        item.options.forEach(opt => {
+          optionsHtml += `
+            <label onclick="selectOpt(${item.id}, '${opt.key}')" class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition select-none group text-xs sm:text-sm">
+              <input type="radio" name="q_${item.id}" value="${opt.key}" class="mt-0.5 text-emerald-600 focus:ring-emerald-500">
+              <span class="font-bold text-slate-700 w-5">${opt.key}.</span>
+              <span class="text-slate-800 group-hover:text-emerald-900">${opt.text}</span>
+            </label>
+          `;
+        });
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-bold text-slate-400">CÂU ${item.id} / 10</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${item.pillarColor}">
+              ${item.pillar}
+            </span>
+          </div>
+          <p class="font-semibold text-slate-900 text-sm sm:text-base leading-relaxed">
+            ${item.q}
+          </p>
+          <div class="space-y-2 pt-1">
+            ${optionsHtml}
+          </div>
+          <div id="feedback_${item.id}" class="hidden mt-3 p-3 rounded-xl text-xs font-medium border"></div>
+        `;
+        container.appendChild(card);
+      });
+
+      renderAnswerTable();
+    }
+
+    function selectOpt(qId, key) {
+      userAnswers[qId] = key;
+      const q = QUESTIONS.find(x => x.id === qId);
+      const fb = document.getElementById(`feedback_${qId}`);
+      fb.classList.remove('hidden');
+
+      if (key === q.ans) {
+        fb.className = "mt-3 p-3 rounded-xl text-xs font-medium border bg-emerald-50 border-emerald-200 text-emerald-800";
+        fb.innerHTML = `✅ <b>Chính xác!</b> ${q.exp}`;
+      } else {
+        fb.className = "mt-3 p-3 rounded-xl text-xs font-medium border bg-rose-50 border-rose-200 text-rose-800";
+        fb.innerHTML = `❌ <b>Chưa đúng!</b> Đáp án chính xác là <b>${q.ans}</b>. <i>${q.exp}</i>`;
+      }
+
+      updateScore();
+    }
+
+    function updateScore() {
+      let correct = 0;
+      QUESTIONS.forEach(q => {
+        if (userAnswers[q.id] === q.ans) correct++;
+      });
+      document.getElementById('currentScore').textContent = correct;
+    }
+
+    function resetQuiz() {
+      userAnswers = {};
+      document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+      document.querySelectorAll('[id^="feedback_"]').forEach(el => el.classList.add('hidden'));
+      document.getElementById('currentScore').textContent = '0';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleAnswerKey() {
+      const box = document.getElementById('answerKeyBox');
+      box.classList.toggle('hidden');
+      if (!box.classList.contains('hidden')) {
+        box.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function renderAnswerTable() {
+      const tbody = document.getElementById('answerTableBody');
+      tbody.innerHTML = '';
+      QUESTIONS.forEach(q => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50";
+        tr.innerHTML = `
+          <td class="p-2.5 font-bold text-center">${q.id}</td>
+          <td class="p-2.5 font-black text-center text-emerald-700 bg-emerald-50/50">${q.ans}</td>
+          <td class="p-2.5 font-medium text-slate-600">${q.pillar}</td>
+          <td class="p-2.5 text-slate-700">${q.exp}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

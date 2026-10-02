@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+<style>canvas{touch-action:none}</style>
+</head>
+<body class="bg-[#edf2ec] m-0 p-2 select-none" style="font-family:system-ui,sans-serif">
+<div class="mx-auto" style="max-width:1160px">
+  <!-- TIÊU ĐỀ BÀI HỌC STEM -->
+  <div class="flex items-center justify-between mb-1.5 px-1">
+    <div>
+      <h1 class="text-base font-bold text-gray-800 flex items-center gap-1.5">
+        <span class="text-lg">🤖</span> ECO-BOT 3D — Trạm Thực Nghiệm STEM Nông Nghiệp Lớp 6
+      </h1>
+      <p class="text-[11px] text-gray-500">Học sinh tự tay: Lái robot • Tưới nước • Khám phá cấu tạo linh kiện • Hoàn thành thử thách cứu cây</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="startMission()" class="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs rounded-lg shadow-md transition transform active:scale-95 flex items-center gap-1.5 animate-pulse">
+        🏆 Thử Thách Cứu Cây
+      </button>
+    </div>
+  </div>
+
+  <div class="flex gap-2">
+    <!-- KHUNG MÔ HÌNH 3D VÀ CÁC NÚT TƯƠNG TÁC TRỰC QUAN -->
+    <div class="relative flex-1">
+      <canvas id="c" class="w-full rounded-xl border border-gray-300 shadow-lg cursor-grab active:cursor-grabbing"></canvas>
+      
+      <!-- BẢNG ĐO THÔNG SỐ IOT (Top Left) -->
+      <div class="absolute top-2.5 left-2.5 bg-slate-900/80 backdrop-blur-md text-white rounded-lg p-2.5 text-[11px] shadow-lg border border-white/10 space-y-1 w-56 pointer-events-none">
+        <div class="flex items-center justify-between border-b border-white/20 pb-1">
+          <span class="font-bold text-emerald-400 flex items-center gap-1">📡 CẢM BIẾN IOT</span>
+          <span id="txtMode" class="text-[9px] bg-emerald-500/30 text-emerald-300 px-1.5 py-0.5 rounded font-semibold">TỰ ĐỘNG</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-300">🚜 Trạng thái:</span>
+          <b id="act" class="text-sky-300">Đang tuần tra...</b>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-300">💧 Can nước:</span>
+          <b id="txtWater" class="text-cyan-300">450 / 500 ml</b>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-300">🪴 Độ ẩm đất (Cây #1):</span>
+          <b id="txtMoist" class="text-amber-300 font-bold">35% (Khô ⚠️)</b>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-300">🔋 Pin mặt trời:</span>
+          <b class="text-emerald-300">96% ☀️ Đang nạp</b>
+        </div>
+      </div>
+
+      <!-- THẺ KIẾN THỨC STEM POPUP (Top Right) -->
+      <div id="cardInfo" class="hidden absolute top-2.5 right-2.5 bg-white/95 backdrop-blur-md border border-emerald-500/40 rounded-xl p-3 text-[11px] shadow-2xl w-64 text-gray-700 animate-fade-in z-20">
+        <div class="flex items-center justify-between border-b border-gray-200 pb-1.5 mb-1.5">
+          <b id="cardTitle" class="text-xs font-bold text-emerald-700">📦 BỘ PHẬN</b>
+          <button onclick="closeCard()" class="text-gray-400 hover:text-gray-700 font-bold px-1 text-sm">✕</button>
+        </div>
+        <p id="cardDesc" class="text-gray-600 leading-relaxed"></p>
+        <div id="cardStem" class="mt-2 bg-emerald-50 rounded-lg p-1.5 text-[10px] text-emerald-800 font-medium"></div>
+      </div>
+
+      <!-- THÔNG BÁO NHIỆM VỤ CỨU CÂY (Center Top Alert) -->
+      <div id="alertMission" class="hidden absolute top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-white font-bold text-xs px-4 py-2 rounded-full shadow-xl flex items-center gap-2 z-30">
+        <span id="txtMission">🚨 Cây #3 đang héo (18%)! Em hãy lái Eco-Bot tới và bấm Tưới Nước!</span>
+      </div>
+
+      <!-- BẢNG ĐIỀU KHIỂN LÁI XE CHO HỌC SINH (Bottom Center) -->
+      <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-slate-900/85 backdrop-blur-md rounded-xl p-1.5 flex items-center gap-1.5 shadow-2xl border border-white/20 z-10">
+        <button onclick="drivePrev()" title="Lùi lại cây trước" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition active:scale-95">
+          ⏮️ Cây trước
+        </button>
+        <button onclick="waterNow()" title="Tưới nước ngay" class="px-4 py-1.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white rounded-lg text-xs font-bold shadow-md flex items-center gap-1.5 transition active:scale-95">
+          💧 TƯỚI NƯỚC!
+        </button>
+        <button onclick="driveNext()" title="Tiến tới cây tiếp theo" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition active:scale-95">
+          Cây tiếp ⏭️
+        </button>
+        <div class="h-5 w-[1px] bg-white/20 mx-0.5"></div>
+        <button id="btnMode" onclick="toggleManual()" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition active:scale-95">
+          🎮 Thủ công
+        </button>
+      </div>
+    </div>
+
+    <!-- CỘT BÊN PHẢI: KHÁM PHÁ BỘ PHẬN & CÔNG CỤ -->
+    <div class="w-48 bg-white/95 border border-gray-200 rounded-xl p-2 shadow-sm text-[11px] flex flex-col gap-1.5 shrink-0">
+      <b class="text-xs text-gray-700 flex items-center gap-1">🔍 Bấm vào để học:</b>
+      <p class="text-[10px] text-gray-400">Click để xoay 3D & xem giải thích:</p>
+      <div class="space-y-1">
+        <button onclick="inspect('box')" class="w-full text-left px-2 py-1 rounded bg-gray-50 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 text-gray-700 text-[10px] font-medium flex items-center gap-1.5 transition">
+          <span class="w-2.5 h-2.5 rounded-sm bg-slate-100 border border-gray-400"></span>📦 Hộp nhựa chống nước
+        </button>
+        <button onclick="inspect('arduino')" class="w-full text-left px-2 py-1 rounded bg-gray-50 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 text-gray-700 text-[10px] font-medium flex items-center gap-1.5 transition">
+          <span class="w-2.5 h-2.5 rounded-sm bg-teal-600"></span>🧠 Mạch Arduino + Pin
+        </button>
+        <button onclick="inspect('dome')" class="w-full text-left px-2 py-1 rounded bg-gray-50 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 text-gray-700 text-[10px] font-medium flex items-center gap-1.5 transition">
+          <span class="w-2.5 h-2.5 rounded-full bg-sky-200 border border-sky-400"></span>🌱 Mái vòm chai 1.5L
+        </button>
+        <button onclick="inspect('can')" class="w-full text-left px-2 py-1 rounded bg-gray-50 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 text-gray-700 text-[10px] font-medium flex items-center gap-1.5 transition">
+          <span class="w-2.5 h-2.5 rounded-sm bg-blue-500"></span>💧 Can nước 500ml
+        </button>
+        <button onclick="inspect('arm')" class="w-full text-left px-2 py-1 rounded bg-gray-50 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 text-gray-700 text-[10px] font-medium flex items-center gap-1.5 transition">
+          <span class="w-2.5 h-2.5 rounded-sm bg-amber-200 border border-amber-500"></span>🦾 Tay que kem gỗ
+        </button>
+        <button onclick="inspect('solar')" class="w-full text-left px-2 py-1 rounded bg-gray-50 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 text-gray-700 text-[10px] font-medium flex items-center gap-1.5 transition">
+          <span class="w-2.5 h-2.5 rounded-sm bg-slate-900 border border-gray-600"></span>☀️ Tấm Solar Silicon
+        </button>
+        <button onclick="inspect('track')" class="w-full text-left px-2 py-1 rounded bg-gray-50 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 text-gray-700 text-[10px] font-medium flex items-center gap-1.5 transition">
+          <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>🛞 Bánh xích nắp chai
+        </button>
+      </div>
+
+      <hr class="border-gray-200 my-0.5">
+      <b class="text-xs text-gray-700">⚙️ Công cụ mô hình</b>
+      <div class="space-y-1">
+        <button id="btnExp" onclick="toggleExp()" class="w-full py-1 bg-amber-500 text-white rounded text-[10px] font-semibold hover:bg-amber-600 transition">💥 Tách rời linh kiện</button>
+        <button id="btnRot" onclick="toggleRot()" class="w-full py-1 bg-emerald-500 text-white rounded text-[10px] font-semibold hover:bg-emerald-600 transition">⟳ Tự xoay: BẬT</button>
+        <button onclick="resetView()" class="w-full py-1 bg-sky-500 text-white rounded text-[10px] font-semibold hover:bg-sky-600 transition">↺ Reset góc nhìn</button>
+        <button id="btnSpd" onclick="toggleSpd()" class="w-full py-1 bg-purple-500 text-white rounded text-[10px] font-semibold hover:bg-purple-600 transition">⏩ Tốc độ: 1x</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const C=document.getElementById('c'),G=C.getContext('2d'),ACT=document.getElementById('act');
+let W,H;const{sin,cos,PI,sqrt,min,max,round,abs}=Math;
+function resize(){const r=C.getBoundingClientRect();W=C.width=round(r.width*devicePixelRatio);H=C.height=round(r.width*0.56*devicePixelRatio);C.style.height=round(r.width*0.56)+'px'}
+resize();window.onresize=resize;
+
+let rY=0.55,rX=-0.22,autoR=true,expT=0,exp=0,spd=1;
+let drag=false,pmx=0,pmy=0,T=0,lastT=0;
+let robZ=0,armAng=0,armTgt=0,bobY=0;
+let phase='move',phaseT=0;
+const stops=[-1.6,-0.5,0.5,1.6];
+let stopIdx=0,moveDir=1;
+const GY=-2.2;
+
+// INTERACTIVE STEM SIMULATOR STATE
+let isManual = false;
+let waterLevel = 450;
+let soilMoistures = [35, 24, 18, 65];
+let missionActive = false, missionTarget = -1;
+
+function zm(){return W*0.048}
+const LT=[0.22,0.54,0.37];
+function rx(p,a){const c=cos(a),s=sin(a);return[p[0],p[1]*c-p[2]*s,p[1]*s+p[2]*c]}
+function ry(p,a){const c=cos(a),s=sin(a);return[p[0]*c+p[2]*s,p[1],-p[0]*s+p[2]*c]}
+function pj(p){const d=9,z=zm(),s=d/(d-p[2])*z;return[W/2+p[0]*s,H*0.48-p[1]*s,p[2]]}
+function shd(h,f,spec){
+  if(!h||h[0]!=='#')return h;
+  const sp=(spec||0)*255;
+  const r=min(255,(parseInt(h.slice(1,3),16)*f+sp)|0);
+  const g=min(255,(parseInt(h.slice(3,5),16)*f+sp)|0);
+  const b=min(255,(parseInt(h.slice(5,7),16)*f+sp)|0);
+  return`rgb(${r},${g},${b})`;
+}
+
+function F(v,c,fl,ln,oc){return{v,c,fl:fl||0,ln:ln||0,oc:oc||null}}
+function bx(x,y,z,w,h,d,c,fl,ln,oc){
+  const a=w/2,b=h/2,e=d/2;
+  const p=[[x-a,y+b,z+e],[x+a,y+b,z+e],[x+a,y-b,z+e],[x-a,y-b,z+e],
+    [x-a,y+b,z-e],[x+a,y+b,z-e],[x+a,y-b,z-e],[x-a,y-b,z-e]];
+  return[F([p[0],p[1],p[2],p[3]],c,fl,ln,oc),F([p[5],p[4],p[7],p[6]],c,fl,ln,oc),
+    F([p[4],p[0],p[3],p[7]],c,fl,ln,oc),F([p[1],p[5],p[6],p[2]],c,fl,ln,oc),
+    F([p[4],p[5],p[1],p[0]],c,fl,ln,oc),F([p[3],p[2],p[6],p[7]],c,fl,ln,oc)];
+}
+function ring(cx,cy,cz,r,n,c,fl){const v=[];for(let i=0;i<n;i++){const a=i/n*PI*2;v.push([cx+cos(a)*r,cy,cz+sin(a)*r])}return F(v,c,fl)}
+function cyl(cx,y1,y2,cz,r,n,c,fl,ln,oc){
+  const f=[];
+  for(let i=0;i<n;i++){
+    const a1=i/n*PI*2,a2=(i+1)/n*PI*2;
+    f.push(F([[cx+cos(a1)*r,y1,cz+sin(a1)*r],[cx+cos(a2)*r,y1,cz+sin(a2)*r],
+      [cx+cos(a2)*r,y2,cz+sin(a2)*r],[cx+cos(a1)*r,y2,cz+sin(a1)*r]],c,fl,ln,oc));
+  }
+  f.push(ring(cx,y1,cz,r,n,c,fl));
+  f.push(ring(cx,y2,cz,r,n,c,fl));
+  return f;
+}
+
+// === STATIC SCENE (MẶT ĐẤT VƯỜN THỰC NGHIỆM STEM TỰ NHIÊN) ===
+let SF=[];
+function buildStatic(){
+  const f=[];
+  // 1. THẢM CỎ XANH TƯƠI MÁT BAO QUANH VƯỜN STEM (Rộng 14m x 10m chống cảm giác cô lập)
+  f.push(...bx(0, GY-0.08, 0, 14.0, 0.16, 10.0, '#558B2F', 0, 1, '#33691E'));
+  f.push(...bx(-4.8, GY-0.01, 0, 3.8, 0.03, 8.8, '#689F38', 0, 1, '#33691E'));
+  f.push(...bx(4.8, GY-0.01, 0, 3.8, 0.03, 8.8, '#689F38', 0, 1, '#33691E'));
+
+  // 2. KHUNG GỖ LUỐNG RAU NÔNG NGHIỆP CÔNG NGHỆ CAO (Gỗ thông tự nhiên đóng viền luống)
+  f.push(...bx(0, GY+0.08, 3.75, 6.4, 0.28, 0.12, '#BCAAA4', 0, 1.2, '#8D6E63'));
+  f.push(...bx(0, GY+0.08, -3.75, 6.4, 0.28, 0.12, '#BCAAA4', 0, 1.2, '#8D6E63'));
+  f.push(...bx(-3.15, GY+0.08, 0, 0.12, 0.28, 7.6, '#BCAAA4', 0, 1.2, '#8D6E63'));
+  f.push(...bx(3.15, GY+0.08, 0, 0.12, 0.28, 7.6, '#BCAAA4', 0, 1.2, '#8D6E63'));
+  // 4 cọc trụ góc luống gỗ
+  for(const cx of [-3.15, 3.15]){
+    for(const cz of [-3.75, 3.75]){
+      f.push(...bx(cx, GY+0.12, cz, 0.18, 0.36, 0.18, '#8D6E63', 0, 1.2, '#5D4037'));
+    }
+  }
+
+  // 3. NỀN ĐẤT PHÙ SA MÀU NÂU ẤM ÁP TƠI XỐP TRONG BỒN (Không bị đen tối)
+  f.push(...bx(0, GY+0.04, 0, 6.18, 0.2, 7.38, '#795548', 0, 1.2, '#5D4037'));
+
+  // 4. LỐI ĐI CHÍNH Ở GIỮA ĐỂ ROBOT CHẠY
+  f.push(...bx(0, GY+0.05, 0, 1.45, 0.03, 7.2, '#8D6E63', 0, 1, '#6D4C41'));
+  // Hai rãnh lún bánh xích (màu nâu sẫm ẩm do nén đất)
+  f.push(...bx(-0.52, GY+0.055, 0, 0.4, 0.012, 7.0, '#5D4037', 0, 1, '#4E342E'));
+  f.push(...bx(0.52, GY+0.055, 0, 0.4, 0.012, 7.0, '#5D4037', 0, 1, '#4E342E'));
+  // Các vệt gai xích cao su in hằn trên nền đất
+  for(let z=-3.0; z<=3.0; z+=0.28){
+    f.push(...bx(-0.52, GY+0.062, z, 0.38, 0.005, 0.09, '#4E342E'));
+    f.push(...bx(0.52, GY+0.062, z, 0.38, 0.005, 0.09, '#4E342E'));
+  }
+  // Gờ đất tơi xốp ở giữa 2 rãnh
+  f.push(...bx(0, GY+0.065, 0, 0.48, 0.016, 7.0, '#9E7D63', 0, 1, '#795548'));
+
+  // 5. HAI LUỐNG ĐẤT VUN CAO TRỒNG RAU (Màu nâu tự nhiên, đất tơi)
+  for(const rx of [-1.75, 1.75]){
+    f.push(...bx(rx, GY+0.14, 0, 1.5, 0.16, 6.8, '#6D4C41', 0, 1.2, '#4E342E'));
+    f.push(...bx(rx, GY+0.22, 0, 1.2, 0.10, 6.6, '#795548', 0, 1.2, '#5D4037'));
+
+    // Đá perlite trắng & vụn mùn hữu cơ
+    for(let j=-2.8; j<=2.8; j+=0.25){
+      const offX = Math.sin(j*9)*0.35;
+      f.push(...bx(rx+offX, GY+0.275, j, 0.03, 0.015, 0.03, '#FFFFFF'));
+      const humX = Math.cos(j*7)*0.3;
+      f.push(...bx(rx+humX, GY+0.275, j+0.09, 0.045, 0.015, 0.045, '#3E2723'));
+    }
+
+    // Đường ống tưới nhỏ giọt PE đen chạy dọc sống luống
+    f.push(...bx(rx, GY+0.285, 0, 0.04, 0.04, 6.6, '#1E293B', 0, 1, '#0F172A'));
+
+    // Các khóm rau xanh mơn mởn, tươi tốt
+    for(let j=-2.6; j<=2.6; j+=0.55){
+      f.push(...bx(rx+0.08, GY+0.28, j, 0.06, 0.015, 0.015, '#00ACC1'));
+      f.push(...bx(rx, GY+0.34, j, 0.03, 0.12, 0.03, '#388E3C'));
+      f.push(F([[rx-0.16,GY+0.38,j],[rx,GY+0.48,j-0.12],[rx+0.05,GY+0.35,j],[rx-0.05,GY+0.32,j]],'#4CAF50'));
+      f.push(F([[rx+0.16,GY+0.38,j],[rx,GY+0.48,j+0.12],[rx-0.05,GY+0.35,j],[rx+0.05,GY+0.32,j]],'#43A047'));
+      f.push(F([[rx,GY+0.48,j+0.16],[rx-0.12,GY+0.38,j],[rx,GY+0.32,j-0.05],[rx+0.12,GY+0.38,j]],'#66BB6A'));
+      f.push(F([[rx,GY+0.48,j-0.16],[rx+0.12,GY+0.38,j],[rx,GY+0.32,j+0.05],[rx-0.12,GY+0.38,j]],'#81C784'));
+      // Hoa vàng nhỏ nở trên khóm rau
+      f.push(F([[rx, GY+0.51, j],[rx+0.04, GY+0.53, j+0.02],[rx, GY+0.55, j],[rx-0.04, GY+0.53, j-0.02]], '#FFD54F'));
+    }
+  }
+
+  // 6. VẾT ĐẤT ƯỚT ĐẪM NƯỚC TẠI CÁC ĐIỂM DỪNG TƯỚI
+  for(const sz of stops){
+    f.push(...bx(1.2, GY+0.278, sz, 0.65, 0.006, 0.65, '#3E2723', 0, 1, '#27160C'));
+    f.push(F([[1.2-0.2, GY+0.282, sz-0.2],[1.2+0.2, GY+0.282, sz-0.2],[1.2+0.2, GY+0.282, sz+0.2],[1.2-0.2, GY+0.282, sz+0.2]], 'rgba(79, 195, 247, 0.45)', 1));
+  }
+
+  // 7. BIỂN HIỆU GỖ STEM TRONG VƯỜN
+  f.push(...bx(3.6, GY+0.6, -2.4, 0.07, 1.2, 0.07, '#8D6E63', 0, 1, '#5D4037'));
+  f.push(F([[2.8, GY+1.25, -2.42], [4.4, GY+1.25, -2.42], [4.4, GY+0.75, -2.42], [2.8, GY+0.75, -2.42]], '#FFFDE7', 3));
+
+  // 8. HÀNG RÀO GỖ SÂN VƯỜN PHÍA SAU
+  for(let x=-4.8; x<=4.8; x+=1.2){
+    f.push(...bx(x, GY+0.35, -4.5, 0.05, 0.7, 0.05, '#D7CCC8', 0, 1, '#A1887F'));
+  }
+  f.push(...bx(0, GY+0.55, -4.5, 9.8, 0.04, 0.03, '#D7CCC8', 0, 1, '#A1887F'));
+  f.push(...bx(0, GY+0.25, -4.5, 9.8, 0.04, 0.03, '#D7CCC8', 0, 1, '#A1887F'));
+
+  SF=f;
+}
+buildStatic();
+
+// === ROBOT ===
+function buildRobot(){
+  const f=[],e=exp;
+  // Chiều cao trục bánh xe hạ thấp để bánh xích bám chặt vào rãnh đất (GY + 0.34, lún 1.5cm vào rãnh)
+  const tY=GY+0.34,bY=tY+0.98+e*0.3+bobY;
+  const te=e*0.6,tR=T*2.5*spd;
+
+  // ========== BÓNG ĐỔ TIẾP XÚC ĐẤT (CONTACT SHADOW - KHÔNG CÒN BỊ LƠ LỬNG) ==========
+  for(const s of[-1,1]){
+    const tx=s*(0.52+te);
+    // Vệt bóng đậm ngay dưới 2 dải bánh xích
+    f.push(F([
+      [tx-0.22,GY+0.057,-1.05],
+      [tx+0.22,GY+0.057,-1.05],
+      [tx+0.22,GY+0.057,1.05],
+      [tx-0.22,GY+0.057,1.05]
+    ],'rgba(35,20,12,0.75)'));
+  }
+  // Vùng bóng râm khuếch tán gầm xe
+  f.push(F([
+    [-0.85,GY+0.056,-0.95],
+    [0.85,GY+0.056,-0.95],
+    [0.85,GY+0.056,0.95],
+    [-0.85,GY+0.056,0.95]
+  ],'rgba(45,28,18,0.45)'));
+
+  // ========== TRACKS (bìa cứng đen) ==========
+  for(const s of[-1,1]){
+    const tx=s*(0.52+te);
+    f.push(...bx(tx,tY,0,0.34,0.6,2.0,'#2a2a2a',0,1.5,'#111'));
+    for(let i=0;i<6;i++){
+      const zo=-0.85+((i*0.34+tR)%2.04);
+      if(zo>=-1&&zo<=1)f.push(...bx(tx,tY,zo,0.38,0.05,0.06,'#1a1a1a',0,1,'#000'));
+    }
+    // BÁNH XE NẮP CHAI SẮC MÀU THẬT
+    const capColors=['#1565C0','#D32F2F','#388E3C','#F57C00','#0288D1','#7B1FA2'];
+    for(let w=0;w<3;w++){
+      const zz=-0.75+w*0.75;
+      const col=capColors[(s>0?w:w+3)%6];
+      const outer=[],inner=[];
+      for(let i=0;i<14;i++){
+        const a=i/14*PI*2+tR*1.5;
+        const rr=i%2===0?0.2:0.18;
+        outer.push([tx+s*0.2,cos(a)*rr+tY,sin(a)*rr+zz]);
+        inner.push([tx+s*0.2,cos(a)*0.12+tY,sin(a)*0.12+zz]);
+      }
+      f.push(F(outer,col,0,1.5,'#333'));
+      f.push(F(inner,shd(col,0.7)));
+      const dot=[];
+      for(let i=0;i<8;i++){const a=i/8*PI*2;dot.push([tx+s*0.21,cos(a)*0.05+tY,sin(a)*0.05+zz])}
+      f.push(F(dot,shd(col,1.3)));
+    }
+  }
+
+  // ========== BODY (HỘP NHỰA TÁI CHẾ CHỐNG NƯỚC 100%) ==========
+  const boxW=1.85,boxH=1.55,boxD=1.65;
+  f.push(...bx(0,bY,0,boxW,boxH,boxD,'#F8FAFC',0,1.8,'#CBD5E1'));
+
+  // Nắp hộp nhựa & Gioăng cao su xanh lá
+  f.push(...bx(0,bY+boxH/2+0.02,0,boxW+0.04,0.06,boxD+0.04,'#E2E8F0',0,1.5,'#94A3B8'));
+  f.push(...bx(0,bY+boxH/2-0.02,0,boxW+0.02,0.04,boxD+0.02,'#4CAF50',0,1.5,'#2E7D32'));
+
+  // 4 Chốt khóa nắp chống nước
+  f.push(...bx(0,bY+boxH/2-0.06,boxD/2+0.025,0.4,0.12,0.04,'#2E7D32',0,1,'#1B5E20'));
+  f.push(...bx(0,bY+boxH/2-0.06,-boxD/2-0.025,0.4,0.12,0.04,'#2E7D32',0,1,'#1B5E20'));
+  f.push(...bx(-boxW/2-0.025,bY+boxH/2-0.06,0,0.04,0.12,0.4,'#2E7D32',0,1,'#1B5E20'));
+  f.push(...bx(boxW/2+0.025,bY+boxH/2-0.06,0,0.04,0.12,0.4,'#2E7D32',0,1,'#1B5E20'));
+
+  // Dải ốp bảo vệ màu xanh lá
+  f.push(...bx(0,bY-0.45,boxD/2+0.008,boxW-0.1,0.12,0.01,'#4CAF50',0,1,'#2E7D32'));
+  f.push(...bx(0,bY+0.42,boxD/2+0.008,boxW-0.1,0.08,0.01,'#4CAF50',0,1,'#2E7D32'));
+
+  // 4 Ốc vít kim loại ở 4 góc mặt trước
+  const screwR=0.035;
+  [[-boxW/2+0.18,bY+boxH/2-0.22],[boxW/2-0.18,bY+boxH/2-0.22],
+   [-boxW/2+0.18,bY-boxH/2+0.22],[boxW/2-0.18,bY-boxH/2+0.22]].forEach(([sx,sy])=>{
+    f.push(...bx(sx,sy,boxD/2+0.01,screwR*2,screwR*2,0.01,'#94A3B8',0,1,'#475569'));
+    f.push(...bx(sx,sy,boxD/2+0.015,screwR,screwR,0.01,'#334155'));
+  });
+
+  // Nhãn học sinh viết tay trên mặt hộp (ECO-BOT - 6TH GRADE)
+  f.push(F([[-boxW/2+0.12,bY-0.08,boxD/2+0.012],[boxW/2-0.12,bY-0.08,boxD/2+0.012],
+            [boxW/2-0.12,bY-0.42,boxD/2+0.012],[-boxW/2+0.12,bY-0.42,boxD/2+0.012]],'#FFFFFF',5,1,'#CBD5E1'));
+  // Nhãn ở sườn trái
+  f.push(F([[-boxW/2-0.012,bY-0.05,boxD*0.38],[-boxW/2-0.012,bY-0.05,-boxD*0.38],
+            [-boxW/2-0.012,bY-0.38,-boxD*0.38],[-boxW/2-0.012,bY-0.38,boxD*0.38]],'#FFFFFF',5,1,'#CBD5E1'));
+
+  // Hộp 2 pin AA màu đen trên nắp hộp cấp nguồn
+  f.push(...bx(-0.45,bY+boxH/2+0.07,-0.2,0.36,0.12,0.48,'#1E293B',0,1,'#0F172A'));
+  f.push(...bx(-0.45,bY+boxH/2+0.08,0.05,0.22,0.06,0.03,'#94A3B8'));
+
+  // Bo mạch Arduino Uno / Microbit lấp ló bên trong hộp
+  f.push(...bx(0,bY-0.2,0,0.9,0.12,0.7,'#00878F',0,1.2,'#005B60'));
+  f.push(...bx(0,bY-0.12,0,0.3,0.04,0.3,'#1E293B',0,1,'#0F172A'));
+  f.push(F([[-0.25,bY-0.1,-0.2],[-0.2,bY-0.05,0.2],[-0.17,bY-0.05,0.2],[-0.22,bY-0.1,-0.2]],'#EF4444'));
+  f.push(F([[-0.15,bY-0.1,-0.2],[-0.1,bY-0.05,0.2],[-0.07,bY-0.05,0.2],[-0.12,bY-0.1,-0.2]],'#1E293B'));
+  f.push(F([[0.15,bY-0.1,-0.2],[0.2,bY-0.05,0.2],[0.23,bY-0.05,0.2],[0.18,bY-0.1,-0.2]],'#F59E0B'));
+
+  // ========== MÀN HÌNH LED MA TRẬN 8x8 (MODULE ĐIỆN TỬ STEM) ==========
+  const ey=bY+0.14;
+  f.push(...bx(0,ey+0.02,boxD/2+0.008,1.25,0.52,0.01,'#0B132B',0,1.5,'#1E293B'));
+  f.push(...bx(0,ey+0.02,boxD/2+0.012,1.21,0.48,0.005,'rgba(224,242,254,0.12)',2));
+
+  // Đôi mắt LED kỹ thuật số
+  if(phase==='water'){
+    f.push(F([[-0.38,ey+0.12,boxD/2+0.018],[-0.14,ey+0.12,boxD/2+0.018],[-0.18,ey+0.05,boxD/2+0.018],[-0.34,ey+0.05,boxD/2+0.018]],'#00E676',1));
+    f.push(F([[0.14,ey+0.12,boxD/2+0.018],[0.38,ey+0.12,boxD/2+0.018],[0.34,ey+0.05,boxD/2+0.018],[0.18,ey+0.05,boxD/2+0.018]],'#00E676',1));
+    f.push(F([[-0.16,ey-0.08,boxD/2+0.018],[0.16,ey-0.08,boxD/2+0.018],[0.1,ey-0.14,boxD/2+0.018],[-0.1,ey-0.14,boxD/2+0.018]],'#00E676',1));
+  } else {
+    f.push(F([[-0.38,ey+0.18,boxD/2+0.018],[-0.14,ey+0.18,boxD/2+0.018],[-0.14,ey-0.02,boxD/2+0.018],[-0.38,ey-0.02,boxD/2+0.018]],'#00D4FF',1));
+    f.push(F([[0.14,ey+0.18,boxD/2+0.018],[0.38,ey+0.18,boxD/2+0.018],[0.38,ey-0.02,boxD/2+0.018],[0.14,ey-0.02,boxD/2+0.018]],'#00D4FF',1));
+    f.push(F([[-0.3,ey+0.12,boxD/2+0.02],[-0.22,ey+0.12,boxD/2+0.02],[-0.22,ey+0.04,boxD/2+0.02],[-0.3,ey+0.04,boxD/2+0.02]],'#E0F7FA',1));
+    f.push(F([[0.22,ey+0.12,boxD/2+0.02],[0.3,ey+0.12,boxD/2+0.02],[0.3,ey+0.04,boxD/2+0.02],[0.22,ey+0.04,boxD/2+0.02]],'#E0F7FA',1));
+  }
+
+  // ========== MÁI VÒM SINH HỌC (CHAI NHỰA 1.5L TÁI CHẾ) ==========
+  const de=e*1,dY=bY+boxH/2+de;
+  f.push(...cyl(0,dY+0.06,dY,0,0.76,12,'#2E7D32',0,1.2,'#1B5E20'));
+  const dR=0.7,dSeg=12;
+  for(let i=0;i<dSeg;i++){
+    const a1=i/dSeg*PI*2,a2=(i+1)/dSeg*PI*2;
+    f.push(F([[cos(a1)*dR,dY+0.06,sin(a1)*dR],[cos(a2)*dR,dY+0.06,sin(a2)*dR],
+      [cos(a2)*dR,dY+0.58,sin(a2)*dR],[cos(a1)*dR,dY+0.58,sin(a1)*dR]],'rgba(215,235,248,0.2)',2));
+  }
+  for(let i=0;i<dSeg;i++){
+    const a1=i/dSeg*PI*2,a2=(i+1)/dSeg*PI*2;
+    f.push(F([[cos(a1)*dR,dY+0.58,sin(a1)*dR],[cos(a2)*dR,dY+0.58,sin(a2)*dR],
+      [cos(a2)*0.18,dY+0.88,sin(a2)*0.18],[cos(a1)*0.18,dY+0.88,sin(a1)*0.18]],'rgba(215,235,248,0.18)',2));
+  }
+  f.push(...cyl(0,dY+1.02,dY+0.86,0,0.14,8,'rgba(215,235,248,0.3)',2));
+  f.push(...cyl(0,dY+1.08,dY+1.01,0,0.16,8,'#388E3C',0,1,'#1B5E20'));
+  const capTop=[];for(let i=0;i<8;i++){const a=i/8*PI*2;capTop.push([cos(a)*0.16,dY+1.08,sin(a)*0.16])}
+  f.push(F(capTop,'#4CAF50',0,1,'#2E7D32'));
+
+  // Đất mùn hữu cơ & cây mầm
+  f.push(ring(0,dY+0.1,0,0.65,10,'#3E2723'));
+  f.push(...bx(0,dY+0.08,0,1.18,0.04,1.18,'#3E2723'));
+  f.push(...bx(0,dY+0.36,0,0.04,0.42,0.04,'#4CAF50'));
+  f.push(F([[0,dY+0.5,0],[0.24,dY+0.66,0.08],[0.08,dY+0.48,0.04]],'#66BB6A'));
+  f.push(F([[0,dY+0.38,0],[-0.22,dY+0.54,-0.08],[-0.05,dY+0.37,-0.03]],'#81C784'));
+
+  // 2 bóng đèn LED nhỏ & cảm biến độ ẩm
+  f.push(F([[-0.08,dY+0.56,0.25],[-0.03,dY+0.56,0.25],[-0.03,dY+0.5,0.25],[-0.08,dY+0.5,0.25]],'#FF1744',1));
+  f.push(F([[0.03,dY+0.56,0.25],[0.08,dY+0.56,0.25],[0.08,dY+0.5,0.25],[0.03,dY+0.5,0.25]],'#2979FF',1));
+  f.push(...bx(0.28,dY+0.2,0.3,0.02,0.24,0.02,'#D4AF37',0,1,'#AA8C2C'));
+  f.push(...bx(0.34,dY+0.2,0.3,0.02,0.24,0.02,'#D4AF37',0,1,'#AA8C2C'));
+
+  // ========== TẤM PIN MẶT TRỜI SILICON THỰC TẾ ==========
+  const se=e*1;
+  for(const s of[-1,1]){
+    f.push(...bx(s*(0.94+se*0.3),bY+0.35,0,0.06,0.06,0.06,'#D7CCC8',0,1,'#A1887F'));
+    f.push(...bx(s*(1.12+se*0.5),bY+0.45,0,0.04,0.04,0.5,'#D7CCC8',0,1,'#A1887F'));
+    const px=s*(1.36+se),py=bY+0.55+se*0.1;
+    const pw=0.6,pd=0.45;
+    f.push(F([[px-s*pw/2,py,-pd/2],[px+s*pw/2,py+sin(s*0.3)*pw,-pd/2],
+      [px+s*pw/2,py+sin(s*0.3)*pw,pd/2],[px-s*pw/2,py,pd/2]],'#78909C',0,1.5,'#455A64'));
+    const o=0.015;
+    f.push(F([[px-s*(pw/2-0.03),py+o,-(pd/2-0.03)],[px+s*(pw/2-0.03),py+sin(s*0.3)*pw+o,-(pd/2-0.03)],
+      [px+s*(pw/2-0.03),py+sin(s*0.3)*pw+o,pd/2-0.03],[px-s*(pw/2-0.03),py+o,pd/2-0.03]],'#0F172A',0,1,'#1E293B'));
+    for(let g=1;g<=2;g++){
+      const t=g/3;
+      f.push(F([[px-s*(pw/2-0.03),py+o+sin(s*0.3)*pw*t,-pd/2+0.03],[px+s*(pw/2-0.03),py+o+sin(s*0.3)*pw*t,-pd/2+0.03],
+        [px+s*(pw/2-0.03),py+o+sin(s*0.3)*pw*t+0.01,-pd/2+0.03],[px-s*(pw/2-0.03),py+o+sin(s*0.3)*pw*t+0.01,-pd/2+0.03]],'#CBD5E1'));
+    }
+  }
+
+  // Vai cánh tay tưới
+  const shX=boxW/2+0.02, shY=bY+0.05, shZ=0.15;
+
+  // ========== BÌNH NƯỚC (CAN NƯỚC 500ml CÓ VẠCH ĐO) ==========
+  const canW=0.52, canH=0.92, canD=0.6;
+  const canX=boxW/2 + canW/2 - 0.04;
+  const canY=bY + 0.08;
+  const canZ=-0.35 - e*0.5;
+
+  const currentWaterRatio = Math.max(0.1, waterLevel / 500);
+  const waterH=canH * currentWaterRatio;
+  f.push(...bx(canX, canY - canH/2 + waterH/2, canZ, canW, waterH, canD, '#03A9F4', 0, 1.8, '#0277BD'));
+  f.push(F([[canX-canW/2+0.01, canY - canH/2 + waterH, canZ-canD/2+0.01],
+            [canX+canW/2-0.01, canY - canH/2 + waterH, canZ-canD/2+0.01],
+            [canX+canW/2-0.01, canY - canH/2 + waterH, canZ+canD/2-0.01],
+            [canX-canW/2+0.01, canY - canH/2 + waterH, canZ+canD/2-0.01]], '#4FC3F7', 1));
+
+  const airH=canH - waterH;
+  if(airH > 0.05){
+    f.push(...bx(canX, canY + canH/2 - airH/2, canZ, canW, airH, canD, '#E1F5FE', 0, 1.8, '#81D4FA'));
+  }
+
+  // Mặt hiển thị nhãn vạch chia thể tích
+  f.push(F([[canX+canW/2+0.01, canY+canH/2, canZ-canD/2],
+            [canX+canW/2+0.01, canY+canH/2, canZ+canD/2],
+            [canX+canW/2+0.01, canY-canH/2, canZ+canD/2],
+            [canX+canW/2+0.01, canY-canH/2, canZ-canD/2]], '#E1F5FE', 4, 1.5, '#0288D1'));
+  f.push(F([[canX-canW/2, canY+canH/2, canZ+canD/2+0.01],
+            [canX+canW/2, canY+canH/2, canZ+canD/2+0.01],
+            [canX+canW/2, canY-canH/2, canZ+canD/2+0.01],
+            [canX-canW/2, canY-canH/2, canZ+canD/2+0.01]], '#E1F5FE', 4, 1.5, '#0288D1'));
+
+  // Nắp vặn đỏ & quai xách
+  f.push(...cyl(canX, canY + canH/2 + 0.07, canY + canH/2, canZ + 0.1, 0.1, 8, '#FFFFFF', 0, 1.5, '#BDBDBD'));
+  f.push(...cyl(canX, canY + canH/2 + 0.17, canY + canH/2 + 0.06, canZ + 0.1, 0.14, 8, '#E53935', 0, 1.8, '#B71C1C'));
+  const canCapTop=[]; for(let i=0;i<8;i++){const a=i/8*PI*2; canCapTop.push([canX+cos(a)*0.14, canY+canH/2+0.17, canZ+0.1+sin(a)*0.14])}
+  f.push(F(canCapTop, '#FF5252', 0, 1.5, '#C62828'));
+
+  f.push(...bx(canX, canY + canH/2 + 0.07, canZ - 0.14, 0.08, 0.14, 0.24, '#ECEFF1', 0, 1.2, '#B0BEC5'));
+  f.push(...bx(canX, canY + canH/2 + 0.14, canZ - 0.14, 0.1, 0.06, 0.28, '#CFD8DC', 0, 1.2, '#90A4AE'));
+
+  // Băng keo dán giữ can
+  f.push(...bx(canX, canY + 0.22, canZ, canW + 0.03, 0.1, canD + 0.03, '#4CAF50', 0, 1.2, '#2E7D32'));
+  f.push(...bx(canX, canY - 0.22, canZ, canW + 0.03, 0.1, canD + 0.03, '#4CAF50', 0, 1.2, '#2E7D32'));
+
+  // Ống dẫn nước silicon
+  const valveX=canX, valveY=canY - canH/2 + 0.1, valveZ=canZ + canD/2;
+  f.push(...bx(valveX, valveY, valveZ + 0.03, 0.08, 0.08, 0.06, '#37474F', 0, 1, '#212121'));
+  const tubePts=[
+    [valveX, valveY, valveZ + 0.06],
+    [boxW/2 + 0.08, bY + 0.02, 0.05],
+    [shX + 0.05, shY, shZ]
+  ];
+  const tubeR=0.03;
+  for(let t=0;t<tubePts.length-1;t++){
+    const p1=tubePts[t], p2=tubePts[t+1];
+    f.push(F([[p1[0]-tubeR,p1[1],p1[2]],[p2[0]-tubeR,p2[1],p2[2]],
+      [p2[0]+tubeR,p2[1],p2[2]],[p1[0]+tubeR,p1[1],p1[2]]],'#42A5F5',0,1.2,'#1E88E5'));
+    f.push(F([[p1[0],p1[1]-tubeR,p1[2]],[p2[0],p2[1]-tubeR,p2[2]],
+      [p2[0],p2[1]+tubeR,p2[2]],[p1[0],p1[1]+tubeR,p1[2]]],'#90CAF9',0,1.2,'#1E88E5'));
+  }
+
+  // ========== ARM — QUE KEM GỖ + ỐNG HÚT ==========
+  const aa=armAng;
+  const sj=[];for(let i=0;i<10;i++){const a=i/10*PI*2;sj.push([shX+0.08,cos(a)*0.08+shY,sin(a)*0.08+shZ])}
+  f.push(F(sj,'#D7CCC8',0,1.5,'#A1887F'));
+
+  // Cánh tay que kem gỗ
+  const uaX=shX+aa*0.25,uaY=shY-0.08-aa*0.3,uaZ=shZ+aa*0.18;
+  f.push(...bx(uaX, (shY+uaY)/2, uaZ, 0.08, 0.38, 0.04, '#D7CCC8', 0, 1.2, '#A1887F'));
+
+  // Khớp khuỷu nối que kem bằng chốt tán kim loại
+  const elX=uaX+aa*0.15,elY=uaY-0.02,elZ=uaZ+aa*0.1;
+  f.push(...bx(elX, elY, elZ, 0.1, 0.1, 0.06, '#78909C', 0, 1, '#455A64'));
+
+  // Cẳng tay que kem gỗ vươn dài
+  const faX=elX+aa*0.12,faY=elY-0.14-aa*0.4,faZ=elZ+aa*0.06;
+  f.push(...bx(faX, (elY+faY)/2, faZ, 0.07, 0.36, 0.04, '#D7CCC8', 0, 1.2, '#A1887F'));
+
+  // Vòi phun nước
+  const nzX=faX+aa*0.06,nzY=faY-0.02,nzZ=faZ;
+  f.push(...cyl(nzX,nzY,nzY-0.16,nzZ,0.08,8,'#1E293B',0,1.5,'#0F172A'));
+  f.push(...cyl(nzX,nzY-0.16,nzY-0.2,nzZ,0.035,6,'#00BCD4',0,1,'#00838F'));
+
+  // ========== NƯỚC TƯỚI ==========
+  if(phase==='water'&&aa>0.4){
+    const wt=T*4;
+    for(let t=0;t<8;t++){
+      const prog=((wt+t*0.15)%1.8)/1.8;
+      const dy=nzY-0.22-prog*1.5;
+      const spread=prog*0.15;
+      const dx=nzX+sin(t*1.8+T*3)*spread;
+      const dz=nzZ+cos(t*1.3+T*2)*spread;
+      const dropSize=0.04+prog*0.02;
+      f.push(F([[dx-dropSize,dy,dz],[dx+dropSize,dy,dz],
+        [dx+dropSize*0.6,dy-0.1-prog*0.05,dz],[dx-dropSize*0.6,dy-0.1-prog*0.05,dz]],'#29B6F6',1));
+      if(t%2===0){
+        f.push(F([[dx-dropSize*0.4+0.05,dy-0.02,dz+0.03],[dx+dropSize*0.4+0.05,dy-0.02,dz+0.03],
+          [dx+dropSize*0.3+0.05,dy-0.06,dz+0.03],[dx-dropSize*0.3+0.05,dy-0.06,dz+0.03]],'#4FC3F7',1));
+      }
+    }
+    for(let p=0;p<3;p++){
+      const px=nzX+sin(p*2.5)*0.08;
+      const pz=nzZ+cos(p*1.8)*0.06;
+      const pr=0.1+sin(wt+p)*0.03;
+      f.push(F([[px-pr,GY+0.29,pz-pr],[px+pr,GY+0.29,pz-pr],
+        [px+pr,GY+0.29,pz+pr],[px-pr,GY+0.29,pz+pr]],'rgba(41,182,246,0.45)',1));
+    }
+    for(let sp=0;sp<3;sp++){
+      const spx=nzX+sin(wt*2+sp*2)*0.1;
+      const spy=GY+0.3+sin(wt*3+sp)*0.12;
+      const spz=nzZ+cos(wt*1.5+sp*3)*0.08;
+      f.push(F([[spx-0.02,spy,spz],[spx+0.02,spy,spz],[spx+0.01,spy+0.05,spz],[spx-0.01,spy+0.05,spz]],'#81D4FA',1));
+    }
+  }
+
+  // Ống đựng hạt giống bên sườn trái
+  f.push(...bx(-shX-0.02,bY-0.02,0.12,0.16,0.16,0.16,'#8D6E63',0,1.5,'#5D4037'));
+  f.push(...bx(-shX-0.06,bY-0.2,0.2,0.08,0.25,0.08,'#BDBDBD',0,1,'#999'));
+  f.push(...bx(-shX-0.06,bY-0.38,0.26,0.14,0.1,0.14,'#795548',0,1,'#5D4037'));
+
+  return f.map(face=>F(face.v.map(v=>[v[0],v[1],v[2]+robZ]),face.c,face.fl,face.ln,face.oc));
+}
+
+// === INTERACTIVE KNOWLEDGE BASE ===
+const PARTS_INFO = {
+  box: {
+    title: '📦 HỘP THÂN XE (NHỰA PP-05 CHỐNG NƯỚC)',
+    desc: 'Hộp nhựa đựng thực phẩm tái chế chống nước 100%. Nắp có gioăng cao su bảo vệ an toàn bo mạch Arduino và pin bên trong khi xe đi dưới trời mưa hoặc gặp nước tưới.',
+    stem: '💡 STEM: Kỹ thuật chọn vật liệu chống ẩm; Tái chế rác thải nhựa bảo vệ môi trường.'
+  },
+  arduino: {
+    title: '🧠 BO MẠCH ARDUINO UNO & PIN NGUỒN',
+    desc: 'Được ví như "bộ não" điều khiển của Eco-Bot. Mạch nhận tín hiệu từ cảm biến đo độ ẩm đất, khi đất khô mạch sẽ tự động xuất lệnh đóng rơ-le để bơm nước.',
+    stem: '💡 STEM: Công nghệ lập trình vi điều khiển, mạch điện nối tiếp và song song.'
+  },
+  dome: {
+    title: '🌱 MÁI VÒM SINH HỌC (CHAI 1.5L)',
+    desc: 'Cắt từ nửa trên chai nước ngọt 1.5L úp ngược tạo buồng giữ ẩm nhà kính mini. Bên trong có đèn LED quang hợp và que đồng đo độ ẩm cắm ngập trong đất.',
+    stem: '💡 STEM: Khoa học sinh học (sự quang hợp của cây, hiệu ứng nhà kính mini).'
+  },
+  can: {
+    title: '💧 CAN NƯỚC 500ml CÓ VẠCH ĐO THỂ TÍCH',
+    desc: 'Chai nước tái chế có vạch chia ml kẻ bằng bút dạ để theo dõi lượng nước tiêu thụ. Đáy can có van xả nối ống hút silicon đưa nước đến đầu cánh tay tưới.',
+    stem: '💡 STEM: Toán học (đo thể tích ml); Vật lý (áp suất chất lỏng và dòng chảy).'
+  },
+  arm: {
+    title: '🦾 CÁNH TAY CƠ KHÍ QUE KEM GỖ',
+    desc: 'Ghép từ các que kem gỗ liên kết bằng chốt quay (khớp bản lề). Có thể gập gọn khi di chuyển và vươn dài ra luống rau khi tưới nước.',
+    stem: '💡 STEM: Kỹ thuật cơ khí đòn bẩy, chuyển động quay thành chuyển động tịnh tiến.'
+  },
+  solar: {
+    title: '☀️ TẤM PIN MẶT TRỜI SILICON 5V',
+    desc: 'Tấm pin quang điện mini gắn trên giá đỡ que gỗ nghiêng 45 độ đón nắng. Chuyển đổi quang năng thành điện năng sạc bù cho bình ắc-quy của robot.',
+    stem: '💡 STEM: Khoa học năng lượng tái tạo, bảo vệ môi trường chống biến đổi khí hậu.'
+  },
+  track: {
+    title: '🛞 BÁNH XÍCH NẮP CHAI NƯỚC KHOÁNG',
+    desc: 'Các nắp chai nhựa đục lỗ xuyên que tre làm bánh xe, bọc ngoài bằng dải xích cao su có rãnh bám. Giúp robot di chuyển êm ái trên nền đất bùn không bị sa lầy.',
+    stem: '💡 STEM: Vật lý ma sát và áp lực (tăng diện tích tiếp xúc để giảm áp suất lún đất).'
+  }
+};
+
+function inspect(key){
+  autoR = false;
+  document.getElementById('btnRot').textContent = '⟳ Tự xoay: TẮT';
+  const info = PARTS_INFO[key];
+  if(!info) return;
+  document.getElementById('cardTitle').textContent = info.title;
+  document.getElementById('cardDesc').textContent = info.desc;
+  document.getElementById('cardStem').textContent = info.stem;
+  document.getElementById('cardInfo').classList.remove('hidden');
+
+  if(key === 'box') { rY = 0.6; rX = -0.15; }
+  else if(key === 'arduino') { rY = 0.2; rX = -0.7; }
+  else if(key === 'dome') { rY = 0.4; rX = -0.3; }
+  else if(key === 'can') { rY = 1.25; rX = -0.1; }
+  else if(key === 'arm') { rY = 0.7; rX = 0.05; }
+  else if(key === 'solar') { rY = 1.1; rX = -0.35; }
+  else if(key === 'track') { rY = 1.45; rX = 0.15; }
+}
+
+function closeCard(){
+  document.getElementById('cardInfo').classList.add('hidden');
+}
+
+function updateHUD(){
+  document.getElementById('txtWater').textContent = waterLevel + ' / 500 ml';
+  const currentMoist = soilMoistures[stopIdx] || 40;
+  const moistEl = document.getElementById('txtMoist');
+  moistEl.textContent = currentMoist + '% ' + (currentMoist < 40 ? '(Khô ⚠️)' : '(Đủ ẩm ✅)');
+  moistEl.className = currentMoist < 40 ? 'text-amber-400 font-bold' : 'text-emerald-400 font-bold';
+}
+
+function toggleManual(){
+  isManual = !isManual;
+  const btn = document.getElementById('btnMode');
+  const txtMode = document.getElementById('txtMode');
+  if(isManual){
+    btn.textContent = '🤖 Tự động';
+    btn.className = 'px-2.5 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold transition active:scale-95';
+    txtMode.textContent = 'THỦ CÔNG';
+    txtMode.className = 'text-[9px] bg-sky-500/30 text-sky-300 px-1.5 py-0.5 rounded font-semibold';
+    phase = 'standby';
+    ACT.textContent = '🎮 Chờ lệnh lái...';
+    ACT.style.background = 'rgba(0,0,0,0.7)';
+  } else {
+    btn.textContent = '🎮 Thủ công';
+    btn.className = 'px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition active:scale-95';
+    txtMode.textContent = 'TỰ ĐỘNG';
+    txtMode.className = 'text-[9px] bg-emerald-500/30 text-emerald-300 px-1.5 py-0.5 rounded font-semibold';
+    phase = 'move';
+    ACT.textContent = '🚜 Đang tuần tra...';
+  }
+}
+
+function driveNext(){
+  isManual = true;
+  document.getElementById('btnMode').textContent = '🤖 Tự động';
+  document.getElementById('txtMode').textContent = 'THỦ CÔNG';
+  stopIdx = (stopIdx + 1) % stops.length;
+  phase = 'move';
+  armTgt = 0;
+  ACT.textContent = '🚜 Tiến tới cây #' + (stopIdx + 1);
+  updateHUD();
+}
+
+function drivePrev(){
+  isManual = true;
+  document.getElementById('btnMode').textContent = '🤖 Tự động';
+  document.getElementById('txtMode').textContent = 'THỦ CÔNG';
+  stopIdx = (stopIdx - 1 + stops.length) % stops.length;
+  phase = 'move';
+  armTgt = 0;
+  ACT.textContent = '🚜 Lùi về cây #' + (stopIdx + 1);
+  updateHUD();
+}
+
+function waterNow(){
+  if(waterLevel <= 0){
+    alert('Bình đã cạn nước! Hãy bấm Reset để nạp thêm nước.');
+    return;
+  }
+  phase = 'water';
+  phaseT = 0;
+  armTgt = 1;
+  waterLevel = Math.max(0, waterLevel - 25);
+  soilMoistures[stopIdx] = Math.min(95, (soilMoistures[stopIdx] || 30) + 40);
+  ACT.textContent = '💧 Đang xịt nước cây #' + (stopIdx + 1);
+  ACT.style.background = 'rgba(2, 136, 209, 0.85)';
+  updateHUD();
+
+  if(missionActive && stopIdx === missionTarget){
+    missionActive = false;
+    const alertEl = document.getElementById('alertMission');
+    alertEl.className = 'absolute top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white font-bold text-xs px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 z-30 animate-bounce';
+    alertEl.innerHTML = '🎉 XUẤT SẮC! Đã cứu sống cây #' + (missionTarget+1) + '! ⭐ Điểm STEM: +100';
+    setTimeout(()=>{ alertEl.classList.add('hidden'); }, 5000);
+  }
+}
+
+function startMission(){
+  missionActive = true;
+  missionTarget = 2;
+  soilMoistures[missionTarget] = 16;
+  const alertEl = document.getElementById('alertMission');
+  alertEl.classList.remove('hidden');
+  alertEl.className = 'absolute top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-white font-bold text-xs px-4 py-2 rounded-full shadow-xl flex items-center gap-2 z-30 animate-bounce';
+  alertEl.innerHTML = '🚨 BÁO ĐỘNG: Cây #3 đang héo khô (16%)! Em hãy lái Eco-Bot tới và bấm Tưới Nước!';
+  updateHUD();
+}
+
+// === ROBOT AI & ANIMATION ===
+function updateRobot(dt){
+  const s=dt*spd;
+  if(phase==='move'){
+    const tgt=stops[stopIdx],diff=tgt-robZ,dist=abs(diff);
+    if(dist<0.08){
+      if(isManual){
+        phase = 'standby';
+        bobY = 0;
+        ACT.textContent = '📍 Đã đến cây #' + (stopIdx + 1) + ' — Chờ lệnh';
+        ACT.style.background = 'rgba(0,0,0,0.7)';
+      } else {
+        phase='water';phaseT=0;armTgt=1;
+        waterLevel = Math.max(0, waterLevel - 15);
+        soilMoistures[stopIdx] = Math.min(95, (soilMoistures[stopIdx] || 30) + 35);
+        ACT.textContent='💧 Tưới cây #'+(stopIdx+1);
+        ACT.style.background='rgba(33,150,243,0.75)';
+      }
+      updateHUD();
+    }else{
+      robZ+=Math.sign(diff)*min(s*1.1,dist);
+      bobY=sin(T*14*spd)*0.01;
+    }
+    armAng+=(armTgt-armAng)*0.08;
+  }else if(phase==='water'){
+    phaseT+=s;armAng+=(armTgt-armAng)*0.05;
+    if(phaseT>3.5){
+      phase='retract';phaseT=0;armTgt=0;
+      ACT.textContent='🔄 Thu cánh tay';
+      ACT.style.background='rgba(156,39,176,0.7)';
+    }
+  }else if(phase==='retract'){
+    phaseT+=s;armAng+=(0-armAng)*0.06;
+    if(phaseT>1.5){
+      if(isManual){
+        phase = 'standby';
+        bobY = 0;
+        ACT.textContent = '📍 Đang dừng ở cây #' + (stopIdx + 1);
+        ACT.style.background = 'rgba(0,0,0,0.7)';
+      } else {
+        phase='move';phaseT=0;bobY=0;stopIdx+=moveDir;
+        if(stopIdx>=stops.length){stopIdx=stops.length-2;moveDir=-1}
+        if(stopIdx<0){stopIdx=1;moveDir=1}
+        ACT.textContent='🚜 Đến cây #'+(stopIdx+1);
+        ACT.style.background='rgba(0,0,0,0.6)';
+        updateHUD();
+      }
+    }
+  }else if(phase==='standby'){
+    armAng+=(armTgt-armAng)*0.08;
+    bobY = sin(T*3)*0.003;
+  }
+}
+
+// === RENDER ===
+function render(now){
+  const dt=min(0.05,lastT?((now-lastT)/1000):0.016);lastT=now;T+=dt;
+  exp+=(expT-exp)*0.04;
+  updateRobot(dt);
+  if(autoR)rY+=0.003;
+
+  const all=[...SF,...buildRobot()];
+  const tf=all.map(f=>{
+    const tv=f.v.map(p=>ry(rx(p,rX),rY));
+    let cz=0;for(let i=0;i<tv.length;i++)cz+=tv[i][2];cz/=tv.length;
+    let li=0.75, spec=0;
+    if(tv.length>=3){
+      const ax=tv[1][0]-tv[0][0],ay=tv[1][1]-tv[0][1],az=tv[1][2]-tv[0][2];
+      const bx2=tv[tv.length-1][0]-tv[0][0],by2=tv[tv.length-1][1]-tv[0][1],bz=tv[tv.length-1][2]-tv[0][2];
+      const nx=ay*bz-az*by2,ny=az*bx2-ax*bz,nz=ax*by2-ay*bx2;
+      const nl=sqrt(nx*nx+ny*ny+nz*nz)||1;
+      const n0=nx/nl, n1=ny/nl, n2=nz/nl;
+      li=max(0,(n0*LT[0]+n1*LT[1]+n2*LT[2]))*0.42+0.58;
+      const hx=LT[0], hy=LT[1], hz=LT[2]-1;
+      const hl=sqrt(hx*hx+hy*hy+hz*hz)||1;
+      const dotH=max(0, n0*(hx/hl)+n1*(hy/hl)+n2*(hz/hl));
+      spec=Math.pow(dotH, 12)*0.35;
+    }
+    return{...f,v:tv,cz,li,spec};
+  });
+  tf.sort((a,b)=>{if(a.fl===2&&b.fl!==2)return 1;if(b.fl===2&&a.fl!==2)return-1;return a.cz-b.cz});
+
+  G.clearRect(0,0,W,H);
+  const bg=G.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#4A90E2');
+  bg.addColorStop(0.4,'#A4C8F0');
+  bg.addColorStop(0.72,'#E4EDF5');
+  bg.addColorStop(0.88,'#9DCB8E');
+  bg.addColorStop(1,'#5E9E4C');
+  G.fillStyle=bg;G.fillRect(0,0,W,H);
+
+  // Ánh nắng tự nhiên
+  G.save();
+  const sunG=G.createRadialGradient(W*0.8, H*0.1, 0, W*0.8, H*0.1, W*0.22);
+  sunG.addColorStop(0, 'rgba(255, 255, 245, 0.42)');
+  sunG.addColorStop(0.4, 'rgba(255, 248, 210, 0.16)');
+  sunG.addColorStop(1, 'rgba(255, 248, 210, 0)');
+  G.fillStyle=sunG; G.fillRect(W*0.5, 0, W*0.5, H*0.35);
+
+  G.globalAlpha=0.18; G.fillStyle='#FFFFFF';
+  [[W*0.2,H*0.08,W*0.09],[W*0.5,H*0.12,W*0.07],[W*0.75,H*0.06,W*0.08]].forEach(([cx,cy,r])=>{G.beginPath();G.ellipse(cx,cy,r,r*0.26,0,0,PI*2);G.fill()});
+  G.restore();
+
+  for(let i=0;i<tf.length;i++){
+    const f=tf[i],pv=[];for(let j=0;j<f.v.length;j++)pv.push(pj(f.v[j]));
+    G.beginPath();G.moveTo(pv[0][0],pv[0][1]);for(let j=1;j<pv.length;j++)G.lineTo(pv[j][0],pv[j][1]);G.closePath();
+    if(f.fl===2)G.fillStyle=f.c;else if(f.c[0]==='#')G.fillStyle=shd(f.c,f.li,f.spec);else G.fillStyle=f.c;
+    if(f.fl===1){G.save();G.shadowColor=f.c;G.shadowBlur=14*devicePixelRatio;G.fill();G.restore()}else G.fill();
+    const lw=f.ln||0.4;
+    G.strokeStyle=f.oc||(f.fl===2?'rgba(140,200,230,0.1)':'rgba(0,0,0,0.04)');
+    G.lineWidth=lw*devicePixelRatio*0.5;G.stroke();
+
+    // Sign text
+    if(f.fl===3){const cx2=(pv[0][0]+pv[2][0])/2,cy2=(pv[0][1]+pv[2][1])/2,sw=abs(pv[1][0]-pv[0][0]);
+      if(sw>15){G.save();G.fillStyle='#2E7D32';G.font=`bold ${max(8,sw*0.1)}px system-ui`;G.textAlign='center';G.textBaseline='middle';
+        G.fillText('VƯỜN RAU STEM',cx2,cy2-sw*0.04);G.fillStyle='#1565C0';G.font=`${max(6,sw*0.07)}px system-ui`;G.fillText('LỚP 6 THỰC NGHIỆM',cx2,cy2+sw*0.06);G.restore()}}
+    
+    // Canister text
+    if(f.fl===4){
+      const cx2=(pv[0][0]+pv[2][0])/2, cy2=(pv[0][1]+pv[2][1])/2;
+      const sw=abs(pv[1][0]-pv[0][0]), sh=abs(pv[2][1]-pv[0][1]);
+      if(sw>10 && sh>14){
+        G.save();
+        G.fillStyle='#01579B';
+        G.font=`bold ${max(6.5, sw*0.16)}px system-ui`;
+        G.textAlign='center'; G.textBaseline='middle';
+        G.fillText('💧 NƯỚC', cx2, cy2 - sh*0.26);
+        G.strokeStyle='#0277BD'; G.lineWidth=max(1, sw*0.025);
+        G.font=`${max(5, sw*0.11)}px system-ui`;
+        G.fillStyle='#0277BD'; G.textAlign='left';
+        const y500 = cy2 - sh*0.06;
+        G.beginPath(); G.moveTo(cx2 - sw*0.35, y500); G.lineTo(cx2 - sw*0.08, y500); G.stroke();
+        G.fillText('500ml', cx2 - sw*0.04, y500);
+        const y300 = cy2 + sh*0.12;
+        G.beginPath(); G.moveTo(cx2 - sw*0.35, y300); G.lineTo(cx2 - sw*0.12, y300); G.stroke();
+        G.fillText('300ml', cx2 - sw*0.04, y300);
+        const y100 = cy2 + sh*0.30;
+        G.beginPath(); G.moveTo(cx2 - sw*0.35, y100); G.lineTo(cx2 - sw*0.15, y100); G.stroke();
+        G.fillText('100ml', cx2 - sw*0.04, y100);
+        G.restore();
+      }
+    }
+
+    // Student decal
+    if(f.fl===5){
+      const cx2=(pv[0][0]+pv[2][0])/2, cy2=(pv[0][1]+pv[2][1])/2;
+      const sw=abs(pv[1][0]-pv[0][0]), sh=abs(pv[2][1]-pv[0][1]);
+      if(sw>12 && sh>8){
+        G.save();
+        G.fillStyle='#1B5E20';
+        G.font=`bold ${max(7.5, sw*0.13)}px system-ui`;
+        G.textAlign='center'; G.textBaseline='middle';
+        G.fillText('ECO-BOT', cx2, cy2 - sh*0.1);
+        G.fillStyle='#0D47A1';
+        G.font=`bold ${max(5.5, sw*0.075)}px system-ui`;
+        G.fillText('🌱 6TH GRADE', cx2, cy2 + sh*0.25);
+        G.restore();
+      }
+    }
+  }
+  requestAnimationFrame(render);
+}
+
+C.addEventListener('pointerdown',e=>{drag=true;pmx=e.clientX;pmy=e.clientY;autoR=false;document.getElementById('btnRot').textContent='⟳ Tự xoay: TẮT'});
+window.addEventListener('pointermove',e=>{if(!drag)return;rY+=(e.clientX-pmx)*0.006;rX+=(e.clientY-pmy)*0.006;rX=max(-1.2,min(1.2,rX));pmx=e.clientX;pmy=e.clientY});
+window.addEventListener('pointerup',()=>drag=false);
+C.addEventListener('wheel',e=>{e.preventDefault();const z=zm();const nz=max(W*0.02,min(W*0.07,z-e.deltaY*0.06));zoom=nz},{passive:false});
+C.addEventListener('dblclick',resetView);
+let zoom;
+function resetView(){rY=0.55;rX=-0.22;zoom=undefined;autoR=true;document.getElementById('btnRot').textContent='⟳ Tự xoay: BẬT'}
+function toggleRot(){autoR=!autoR;document.getElementById('btnRot').textContent=autoR?'⟳ Tự xoay: BẬT':'⟳ Tự xoay: TẮT'}
+function toggleExp(){expT=expT>0.5?0:1;document.getElementById('btnExp').textContent=expT>0.5?'🔧 Ghép lại':'💥 Tách rời'}
+function toggleSpd(){spd=spd>=2?0.5:spd+0.5;document.getElementById('btnSpd').textContent='⏩ '+spd+'x'}
+
+updateHUD();
+requestAnimationFrame(render);
+</script>
+</body>
+</html>
