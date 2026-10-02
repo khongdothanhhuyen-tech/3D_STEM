@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bộ Đề Trắc Nghiệm Olympic STEM Lớp 6</title>
+  <title>Đề Thi Trắc Nghiệm Olympic STEM Khối 6</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
     @media print {
       .no-print { display: none !important; }
       body { background: white !important; color: black !important; padding: 0 !important; }
-      .quiz-card { border: 1px solid #ddd !important; box-shadow: none !important; page-break-inside: avoid; }
-      .ans-key { display: block !important; }
+      .quiz-card { border: 1px solid #ccc !important; box-shadow: none !important; page-break-inside: avoid; }
     }
   </style>
 </head>
@@ -24,20 +23,20 @@
           🏅 STEM OLYMPICS • KHỐI 6
         </span>
         <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">
-          THỬ THÁCH OLYMPIC STEM — NHÀ SÁNG LẬP NHÍ
+          BÀI THI OLYMPIC STEM — KHỐI 6
         </h1>
         <p class="text-emerald-100 text-xs sm:text-sm mt-1 max-w-xl">
-          10 câu trắc nghiệm khoa học, kỹ thuật và toán học vui nhộn. Các em hãy đọc kỹ và chọn phương án chính xác nhất nhé!
+          Thời gian làm bài: 15 phút. Các em đọc kỹ từng câu và bấm chọn 1 đáp án đúng nhất, sau đó bấm nút <b>Nộp bài</b> ở cuối trang!
         </p>
         <div class="mt-4 flex flex-wrap items-center gap-3 no-print">
           <div class="bg-black/20 px-3 py-1 rounded-lg text-xs font-semibold">
-            ⏱️ 15 phút
+            ⏱️ Thời gian: 15 phút
           </div>
           <div class="bg-black/20 px-3 py-1 rounded-lg text-xs font-semibold">
-            📝 10 câu trắc nghiệm
+            📝 Số lượng: 10 câu
           </div>
-          <div id="scoreBadge" class="bg-amber-400 text-slate-900 px-3 py-1 rounded-lg text-xs font-bold shadow-sm">
-            ⭐ Điểm số: <span id="currentScore">0</span> / 10
+          <div id="statusBadge" class="bg-white/20 text-white px-3 py-1 rounded-lg text-xs font-bold shadow-sm">
+            📊 Đã làm: <span id="answeredCount">0</span> / 10 câu
           </div>
           <button onclick="window.print()" class="ml-auto px-3.5 py-1 bg-white text-emerald-800 hover:bg-emerald-50 rounded-lg text-xs font-bold shadow transition flex items-center gap-1.5">
             🖨️ In đề thi
@@ -46,37 +45,35 @@
       </div>
     </div>
 
-    <!-- QUIZ CONTAINER -->
+    <!-- QUIZ CONTAINER (CHỈ HIỂN THỊ CÂU HỎI & PHƯƠNG ÁN LỰA CHỌN) -->
     <div id="quizContainer" class="space-y-3.5"></div>
 
-    <!-- CONTROL FOOTER -->
-    <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm no-print">
-      <button onclick="resetQuiz()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg transition">
-        ↺ Làm lại từ đầu
-      </button>
-      <button onclick="toggleAnswerKey()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow transition">
-        📋 Xem / Ẩn đáp án & giải thích
-      </button>
+    <!-- NÚT NỘP BÀI THI (HOÀN TOÀN ẨN ĐÁP ÁN Ở CUỐI) -->
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 no-print">
+      <div>
+        <h3 class="font-bold text-slate-800 text-sm">Hoàn thành bài làm của em?</h3>
+        <p class="text-xs text-slate-500">Kiểm tra lại các câu đã chọn trước khi nộp bài nhé.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="resetQuiz()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition">
+          ↺ Làm lại
+        </button>
+        <button id="btnSubmit" onclick="submitQuiz()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-md transition active:scale-95 flex items-center gap-2">
+          📩 Nộp bài thi
+        </button>
+      </div>
     </div>
 
-    <!-- BẢNG ĐÁP ÁN -->
-    <div id="answerKeyBox" class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-3 ans-key hidden">
-      <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2 border-b pb-2">
-        📋 BẢNG ĐÁP ÁN & GIẢI THÍCH CHI TIẾT
-      </h2>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs text-slate-700 border-collapse">
-          <thead>
-            <tr class="bg-slate-100 text-slate-900 border-b border-slate-200">
-              <th class="p-2 font-bold w-12 text-center">Câu</th>
-              <th class="p-2 font-bold w-16 text-center">Đáp án</th>
-              <th class="p-2 font-bold w-28">Môn</th>
-              <th class="p-2 font-bold">Giải thích ngắn gọn</th>
-            </tr>
-          </thead>
-          <tbody id="answerTableBody" class="divide-y divide-slate-100"></tbody>
-        </table>
+    <!-- KẾT QUẢ SAU KHI NỘP BÀI (CHỈ BÁO ĐIỂM SỐ, TUYỆT ĐỐI KHÔNG LỘ ĐÁP ÁN) -->
+    <div id="resultModal" class="hidden bg-white rounded-2xl p-6 border-2 border-emerald-500 shadow-xl text-center space-y-3 no-print">
+      <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl font-black">
+        🎉
       </div>
+      <h2 class="text-lg font-bold text-slate-900">Chúc mừng em đã hoàn thành bài thi Olympic STEM!</h2>
+      <p class="text-slate-600 text-sm">
+        Điểm số đạt được: <span id="finalScore" class="text-emerald-600 font-extrabold text-2xl">0</span> / 10 câu
+      </p>
+      <div id="scoreComment" class="text-xs font-semibold px-4 py-2 bg-slate-50 rounded-xl inline-block text-slate-700"></div>
     </div>
 
   </div>
@@ -94,8 +91,7 @@
           { key: "C", text: "Màu xanh thẫm" },
           { key: "D", text: "Màu đỏ đậm" }
         ],
-        ans: "B",
-        exp: "Màu trắng phản xạ hầu hết ánh nắng mặt trời, hấp thụ ít nhiệt lượng nhất."
+        ans: "B"
       },
       {
         id: 2,
@@ -108,8 +104,7 @@
           { key: "C", text: "Hình chữ nhật" },
           { key: "D", text: "Hình tròn" }
         ],
-        ans: "A",
-        exp: "Tam giác là hình học bất biến, không bị xô lệch biến dạng khi có lực đè lên."
+        ans: "A"
       },
       {
         id: 3,
@@ -122,8 +117,7 @@
           { key: "C", text: "Năng lượng dầu mỏ" },
           { key: "D", text: "Năng lượng khí đốt" }
         ],
-        ans: "B",
-        exp: "Gió và mặt trời là nguồn năng lượng sạch tự nhiên, không phát thải khí nhà kính."
+        ans: "B"
       },
       {
         id: 4,
@@ -136,8 +130,7 @@
           { key: "C", text: "Đèn chiếu sáng" },
           { key: "D", text: "Quạt thông gió" }
         ],
-        ans: "A",
-        exp: "Cảm biến hồng ngoại phát hiện chuyển động của người để kích hoạt mô-tơ mở cửa."
+        ans: "A"
       },
       {
         id: 5,
@@ -150,8 +143,7 @@
           { key: "C", text: "Làm đẹp kiểu dáng tàu" },
           { key: "D", text: "Tiết kiệm sắt thép" }
         ],
-        ans: "B",
-        exp: "Thiết kế khí động học thuôn nhọn xé gió mượt mà, giúp tàu chạy êm và tiết kiệm điện."
+        ans: "B"
       },
       {
         id: 6,
@@ -164,8 +156,7 @@
           { key: "C", text: "21 lít" },
           { key: "D", text: "30 lít" }
         ],
-        ans: "C",
-        exp: "Phép nhân số tự nhiên: 3 lít × 7 ngày = 21 lít nước."
+        ans: "C"
       },
       {
         id: 7,
@@ -178,8 +169,7 @@
           { key: "C", text: "Thước cuộn" },
           { key: "D", text: "Nam châm" }
         ],
-        ans: "A",
-        exp: "Tấm ván dốc (mặt phẳng nghiêng) giúp giảm lực kéo cần thiết khi nâng vật lên cao."
+        ans: "A"
       },
       {
         id: 8,
@@ -192,8 +182,7 @@
           { key: "C", text: "Tinh bột" },
           { key: "D", text: "Nước khoáng" }
         ],
-        ans: "A",
-        exp: "Diệp lục (chlorophyll) trong tế bào lá hấp thụ quang năng để tổng hợp chất hữu cơ."
+        ans: "A"
       },
       {
         id: 9,
@@ -206,8 +195,7 @@
           { key: "C", text: "Phần cứng" },
           { key: "D", text: "Mạng Internet" }
         ],
-        ans: "B",
-        exp: "Thuật toán (Algorithm) là tập hợp hữu hạn các chỉ dẫn thực hiện từng bước."
+        ans: "B"
       },
       {
         id: 10,
@@ -220,12 +208,12 @@
           { key: "C", text: "Đốt túi nilon ngoài sân" },
           { key: "D", text: "Mua thêm đồ nhựa mới" }
         ],
-        ans: "B",
-        exp: "Tái sử dụng (Reuse) là dùng lại vật dụng cũ cho công năng mới thay vì vứt bỏ."
+        ans: "B"
       }
     ];
 
     let userAnswers = {};
+    let isSubmitted = false;
 
     function renderQuiz() {
       const container = document.getElementById('quizContainer');
@@ -233,13 +221,13 @@
 
       QUESTIONS.forEach((item) => {
         const card = document.createElement('div');
-        card.className = "quiz-card bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm space-y-2.5";
+        card.className = "quiz-card bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm space-y-2.5 transition";
         card.id = `qCard_${item.id}`;
 
         let optionsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">';
         item.options.forEach(opt => {
           optionsHtml += `
-            <label onclick="selectOpt(${item.id}, '${opt.key}')" class="flex items-center gap-2.5 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition select-none group text-xs sm:text-sm">
+            <label onclick="selectOpt(${item.id}, '${opt.key}')" id="label_${item.id}_${opt.key}" class="flex items-center gap-2.5 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition select-none group text-xs sm:text-sm">
               <input type="radio" name="q_${item.id}" value="${opt.key}" class="text-emerald-600 focus:ring-emerald-500">
               <span class="font-bold text-slate-700">${opt.key}.</span>
               <span class="text-slate-800 group-hover:text-emerald-900 font-medium">${opt.text}</span>
@@ -259,69 +247,82 @@
             ${item.q}
           </p>
           ${optionsHtml}
-          <div id="feedback_${item.id}" class="hidden mt-2 p-2 rounded-lg text-xs font-medium border"></div>
         `;
         container.appendChild(card);
       });
-
-      renderAnswerTable();
     }
 
     function selectOpt(qId, key) {
+      if (isSubmitted) return;
       userAnswers[qId] = key;
-      const q = QUESTIONS.find(x => x.id === qId);
-      const fb = document.getElementById(`feedback_${qId}`);
-      fb.classList.remove('hidden');
 
-      if (key === q.ans) {
-        fb.className = "mt-2 p-2.5 rounded-lg text-xs font-medium border bg-emerald-50 border-emerald-200 text-emerald-800";
-        fb.innerHTML = `✅ <b>Chính xác!</b> ${q.exp}`;
-      } else {
-        fb.className = "mt-2 p-2.5 rounded-lg text-xs font-medium border bg-rose-50 border-rose-200 text-rose-800";
-        fb.innerHTML = `❌ <b>Chưa đúng!</b> Đáp án đúng là <b>${q.ans}</b>. <i>${q.exp}</i>`;
-      }
+      // Đánh dấu trực quan phương án đang chọn
+      QUESTIONS.find(x => x.id === qId).options.forEach(opt => {
+        const lbl = document.getElementById(`label_${qId}_${opt.key}`);
+        if (opt.key === key) {
+          lbl.className = "flex items-center gap-2.5 p-2.5 rounded-lg border-2 border-emerald-500 bg-emerald-50/60 cursor-pointer transition select-none text-xs sm:text-sm shadow-sm";
+        } else {
+          lbl.className = "flex items-center gap-2.5 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition select-none group text-xs sm:text-sm";
+        }
+      });
 
-      updateScore();
+      // Cập nhật số câu đã làm
+      const count = Object.keys(userAnswers).length;
+      document.getElementById('answeredCount').textContent = count;
     }
 
-    function updateScore() {
-      let correct = 0;
+    function submitQuiz() {
+      const count = Object.keys(userAnswers).length;
+      if (count < QUESTIONS.length) {
+        const confirmSubmit = confirm(`Em mới làm ${count}/10 câu. Em có chắc chắn muốn nộp bài luôn không?`);
+        if (!confirmSubmit) return;
+      }
+
+      isSubmitted = true;
+      let score = 0;
       QUESTIONS.forEach(q => {
-        if (userAnswers[q.id] === q.ans) correct++;
+        if (userAnswers[q.id] === q.ans) score++;
       });
-      document.getElementById('currentScore').textContent = correct;
+
+      // Hiển thị điểm số, hoàn toàn không có bảng đáp án bên dưới
+      const resModal = document.getElementById('resultModal');
+      resModal.classList.remove('hidden');
+      document.getElementById('finalScore').textContent = score;
+
+      const cmt = document.getElementById('scoreComment');
+      if (score >= 9) {
+        cmt.textContent = "🌟 Xuất sắc! Em có tư duy khoa học và kiến thức STEM rất tuyệt vời!";
+      } else if (score >= 7) {
+        cmt.textContent = "👏 Rất tốt! Em đã nắm rất vững các kiến thức khoa học đời sống!";
+      } else if (score >= 5) {
+        cmt.textContent = "👍 Khá tốt! Cố gắng rèn luyện thêm để đạt kết quả cao hơn nhé!";
+      } else {
+        cmt.textContent = "💪 Cố lên nhé! Hãy đọc lại đề và thử làm lại một lần nữa!";
+      }
+
+      // Khóa nút nộp
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.className = "px-6 py-2.5 bg-slate-300 text-slate-500 font-bold text-sm rounded-xl cursor-not-allowed";
+      btn.textContent = "✅ Đã nộp bài";
+
+      resModal.scrollIntoView({ behavior: 'smooth' });
     }
 
     function resetQuiz() {
       userAnswers = {};
+      isSubmitted = false;
       document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-      document.querySelectorAll('[id^="feedback_"]').forEach(el => el.classList.add('hidden'));
-      document.getElementById('currentScore').textContent = '0';
+      document.getElementById('answeredCount').textContent = '0';
+      document.getElementById('resultModal').classList.add('hidden');
+
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = false;
+      btn.className = "px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-md transition active:scale-95 flex items-center gap-2";
+      btn.textContent = "📩 Nộp bài thi";
+
+      renderQuiz();
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function toggleAnswerKey() {
-      const box = document.getElementById('answerKeyBox');
-      box.classList.toggle('hidden');
-      if (!box.classList.contains('hidden')) {
-        box.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-
-    function renderAnswerTable() {
-      const tbody = document.getElementById('answerTableBody');
-      tbody.innerHTML = '';
-      QUESTIONS.forEach(q => {
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50";
-        tr.innerHTML = `
-          <td class="p-2 font-bold text-center">${q.id}</td>
-          <td class="p-2 font-black text-center text-emerald-700 bg-emerald-50/50">${q.ans}</td>
-          <td class="p-2 font-medium text-slate-600">${q.pillar}</td>
-          <td class="p-2 text-slate-700">${q.exp}</td>
-        `;
-        tbody.appendChild(tr);
-      });
     }
 
     renderQuiz();
