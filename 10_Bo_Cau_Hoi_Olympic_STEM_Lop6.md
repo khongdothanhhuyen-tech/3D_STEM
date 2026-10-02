@@ -1,113 +1,113 @@
-# 🏆 BỘ ĐỀ TRẮC NGHIỆM OLYMPIC STEM — KHỐI 6
-**Chủ đề:** Nông Nghiệp Thông Minh & Robot Tái Chế Eco-Bot  
-**Đối tượng:** Học sinh Lớp 6 (Chương trình GDPT 2018: KHTN 6, Công nghệ 6, Tin học 6, Toán 6)  
-**Thời gian làm bài:** 15 phút (10 câu trắc nghiệm 4 lựa chọn)
+# 🏅 BỘ ĐỀ OLYMPIC STEM — KHỐI 6
+**Chủ đề:** Khám Phá Khoa Học & Sáng Tạo Kỹ Thuật  
+**Thời gian làm bài:** 15 phút (10 câu trắc nghiệm nhanh)  
+*(Quy chuẩn: Câu hỏi thực tế, các phương án A - B - C - D ngắn gọn, súc tích, tránh đoán mò)*
 
 ---
 
-### PHẦN CÂU HỎI TRẮC NGHIỆM
+### PHẦN CÂU HỎI
 
-#### 🌿 Câu 1 (Khoa học - Science)
-Cây trồng trong vườn thực nghiệm cần nước và ánh sáng mặt trời để thực hiện quá trình sinh học quan trọng nào giúp cây tự tổng hợp chất hữu cơ nuôi sống cơ thể?
-- **A.** Quá trình hô hấp tế bào
-- **B.** Quá trình quang hợp
-- **C.** Quá trình thoát hơi nước qua lá
-- **D.** Quá trình nảy mầm
-
----
-
-#### 📦 Câu 2 (Kỹ thuật - Engineering)
-Khi chế tạo robot làm vườn Eco-Bot hoạt động ngoài trời, tại sao các bạn học sinh nên chọn **hộp nhựa PP (Polypropylene)** làm thân xe thay vì dùng thùng bìa carton?
-- **A.** Hộp nhựa PP nhẹ hơn và có thể ăn được
-- **B.** Hộp nhựa PP chống thấm nước tốt, bảo vệ an toàn bo mạch điện khi gặp trời mưa hoặc nước tưới
-- **C.** Bìa carton dẫn điện tốt hơn hộp nhựa
-- **D.** Hộp nhựa PP hấp thụ ánh sáng mặt trời làm mát động cơ
+#### Câu 1 (Khoa học - Vật liệu & Nhiệt)
+Khi đi dưới trời nắng gắt mùa hè, chiếc áo màu nào sẽ giúp cơ thể cảm thấy **mát nhất**?
+- **A.** Màu đen
+- **B.** Màu trắng
+- **C.** Màu xanh thẫm
+- **D.** Màu đỏ đậm
 
 ---
 
-#### ☀️ Câu 3 (Khoa học - Science)
-Năng lượng điện giúp robot Eco-Bot sạc pin hoạt động được tạo ra từ tấm pin mặt trời gắn trên lưng robot. Đây là dạng năng lượng gì?
-- **A.** Năng lượng hóa thạch
-- **B.** Năng lượng tái tạo (năng lượng sạch)
-- **C.** Năng lượng hạt nhân
-- **D.** Năng lượng nhiệt điện than
+#### Câu 2 (Kỹ thuật - Kết cấu chịu lực)
+Khi thiết kế giàn cầu vượt hoặc cần cẩu xây dựng, các thanh thép thường được ghép thành hình học nào để **chịu lực tốt nhất**?
+- **A.** Hình tam giác
+- **B.** Hình vuông
+- **C.** Hình chữ nhật
+- **D.** Hình tròn
 
 ---
 
-#### 🧠 Câu 4 (Công nghệ & Tin học - Technology)
-Bộ phận nào sau đây được ví như **"bộ não"** của robot Eco-Bot, có nhiệm vụ tiếp nhận dữ liệu từ cảm biến độ ẩm đất và ra lệnh kích hoạt máy bơm nước?
-- **A.** Động cơ giảm tốc
-- **B.** Cảm biến độ ẩm đất
-- **C.** Bo mạch vi điều khiển (như Arduino Uno hoặc Micro:bit)
-- **D.** Bình chứa nước 500ml
+#### Câu 3 (Khoa học - Năng lượng xanh)
+Nguồn năng lượng nào sau đây là **năng lượng tái tạo** không bao giờ cạn kiệt và không gây ô nhiễm không khí?
+- **A.** Năng lượng than đá
+- **B.** Năng lượng gió
+- **C.** Năng lượng dầu mỏ
+- **D.** Năng lượng khí đốt
 
 ---
 
-#### 🛞 Câu 5 (Kỹ thuật & Vật lý - Engineering/Physics)
-Robot Eco-Bot di chuyển trên nền đất vườn ẩm ướt bằng hệ thống **bánh xích** (ghép từ nắp chai nhựa và dây cao su) thay vì bánh xe tròn nhỏ thông thường. Tác dụng chính của bánh xích là gì?
-- **A.** Tăng diện tích tiếp xúc với mặt đất để giảm áp suất tác dụng lên đất, giúp xe không bị lún sa lầy
-- **B.** Giúp robot bay được qua các rãnh luống rau
-- **C.** Giúp robot chạy nhanh gấp 10 lần so với bánh xe tròn
-- **D.** Giúp làm tơi xốp đất mà không cần dùng cuốc xới
+#### Câu 4 (Công nghệ - Tự động hóa)
+Cửa kính tự động ở siêu thị hoặc trung tâm thương mại mở ra khi có người bước tới nhờ bộ phận nào?
+- **A.** Cảm biến chuyển động
+- **B.** Loa phát thanh
+- **C.** Đèn chiếu sáng
+- **D.** Quạt thông gió
 
 ---
 
-#### 💧 Câu 6 (Toán học - Mathematics)
-Bình nước trên thân robot có dung tích ban đầu là **450 ml**. Mỗi lần tưới cho một gốc cây rau, cánh tay robot phun ra đúng **25 ml** nước. Sau khi robot đã tưới xong cho **4 gốc cây**, lượng nước còn lại trong bình là bao nhiêu?
-- **A.** 100 ml
-- **B.** 350 ml
-- **C.** 375 ml
-- **D.** 400 ml
+#### Câu 5 (Kỹ thuật - Khí động học)
+Đầu của đoàn tàu cao tốc được thiết kế thuôn nhọn về phía trước nhằm mục đích chính là gì?
+- **A.** Tăng tải trọng chở khách
+- **B.** Giảm lực cản không khí
+- **C.** Làm đẹp kiểu dáng tàu
+- **D.** Tiết kiệm sắt thép
 
 ---
 
-#### 📡 Câu 7 (Công nghệ - Technology)
-Cảm biến độ ẩm đất cắm dưới gốc rau gửi tín hiệu về màn hình hiển thị con số **18%** (trong khi độ ẩm lý tưởng của đất là từ 60% đến 80%). Theo em, robot Eco-Bot nên tự động thực hiện hành động nào sau đây?
-- **A.** Ngắt nguồn điện đi ngủ vì đất đã đủ ẩm
-- **B.** Kích hoạt máy bơm và hạ cánh tay tưới nước ngay cho cây vì đất đang bị khô hạn nghiêm trọng
-- **C.** Bật quạt thông gió để làm đất khô ráo hơn
-- **D.** Đổi hướng chạy ra khỏi luống rau
+#### Câu 6 (Toán học - Thực tế)
+Một vòi nước bị rò rỉ làm thất thoát **3 lít** nước mỗi ngày. Hỏi sau **1 tuần** (7 ngày), lượng nước sạch bị lãng phí là bao nhiêu?
+- **A.** 10 lít
+- **B.** 18 lít
+- **C.** 21 lít
+- **D.** 30 lít
 
 ---
 
-#### 🦾 Câu 8 (Kỹ thuật - Engineering)
-Cánh tay cơ khí nâng hạ vòi tưới của Eco-Bot được ghép từ các que kem gỗ liên kết bằng chốt quay (khớp bản lề) và chịu lực kéo từ động cơ servo. Đây là ứng dụng của loại **máy cơ đơn giản** nào?
+#### Câu 7 (Kỹ thuật - Máy cơ đơn giản)
+Để đưa một thùng hàng nặng 50 kg từ mặt đất lên sàn thùng xe tải một cách nhẹ nhàng nhất, người ta nên dùng:
 - **A.** Mặt phẳng nghiêng
-- **B.** Ròng rọc cố định
-- **C.** Đòn bẩy
-- **D.** Nêm chêm
+- **B.** Cái nêm
+- **C.** Thước cuộn
+- **D.** Nam châm
 
 ---
 
-#### 📊 Câu 9 (Toán học - Mathematics)
-Độ ẩm đo được của luống rau số 1 lúc sáng sớm là **25%**. Sau khi robot Eco-Bot thực hiện chương trình tưới nhỏ giọt, độ ẩm của luống đất đã **tăng thêm 38%**. Hỏi độ ẩm mới của luống rau lúc này là bao nhiêu phần trăm?
-- **A.** 53%
-- **B.** 63%
-- **C.** 73%
-- **D.** 88%
+#### Câu 8 (Khoa học - Sinh học)
+Chất nào sau đây hấp thụ ánh sáng mặt trời giúp lá cây có màu xanh và thực hiện quang hợp?
+- **A.** Chất diệp lục
+- **B.** Khí oxi
+- **C.** Tinh bột
+- **D.** Nước khoáng
 
 ---
 
-#### ♻️ Câu 10 (Môi trường & Xã hội - STEM Impact)
-Dự án chế tạo Robot Eco-Bot từ nắp chai nhựa bỏ đi, can nước ngọt 500ml cũ và que kem gỗ đã qua sử dụng thể hiện nguyên tắc bảo vệ môi trường nào sau đây?
-- **A.** Nguyên tắc 3R: Giảm thiểu (Reduce) – Tái sử dụng (Reuse) – Tái chế (Recycle)
-- **B.** Tăng cường tiêu thụ đồ nhựa dùng một lần
-- **C.** Thu gom rác thải nhựa để đốt ngoài trời lấy nhiệt
-- **D.** Chôn lấp rác thải nhựa trực tiếp dưới luống đất trồng rau
+#### Câu 9 (Tin học - Thuật toán)
+Trong tin học, một dãy các bước hướng dẫn rõ ràng, thực hiện tuần tự từ đầu đến cuối để giải quyết một công việc được gọi là:
+- **A.** Dữ liệu
+- **B.** Thuật toán
+- **C.** Phần cứng
+- **D.** Mạng Internet
 
 ---
 
-### BẢNG ĐÁP ÁN & GIẢI THÍCH CHI TIẾT
+#### Câu 10 (Môi trường - Sáng tạo STEM)
+Hành động nào sau đây thể hiện đúng nhất nguyên tắc **"Tái sử dụng" (Reuse)** để bảo vệ môi trường?
+- **A.** Bỏ rác đúng nơi quy định
+- **B.** Dùng chai nhựa cũ làm chậu cây
+- **C.** Đốt túi nilon ngoài sân
+- **D.** Mua thêm đồ nhựa mới
 
-| Câu | Đáp án | Môn tích hợp | Lời giải thích ngắn gọn dành cho học sinh |
+---
+
+### BẢNG ĐÁP ÁN NHANH & GIẢI THÍCH
+
+| Câu | Đáp án | Môn tích hợp | Giải thích cốt lõi |
 | :---: | :---: | :---: | :--- |
-| **1** | **B** | Khoa học 6 | Nhờ có diệp lục trong lá, nước từ rễ và khí $CO_2$ từ không khí dưới ánh sáng mặt trời, cây thực hiện quang hợp tạo ra tinh bột và giải phóng khí $O_2$. |
-| **2** | **B** | Công nghệ / Kỹ thuật 6 | Nhựa PP (số 5) là loại nhựa an toàn, bền bỉ và chống thấm nước tuyệt đối, bảo vệ mạch điện bên trong không bị chập cháy khi tiếp xúc với nước. |
-| **3** | **B** | Khoa học / Vật lý 6 | Ánh sáng mặt trời là nguồn năng lượng vô tận, không sinh ra khí thải độc hại, thuộc nhóm năng lượng tái tạo (năng lượng sạch). |
-| **4** | **C** | Tin học / Công nghệ 6 | Bo mạch vi điều khiển (Arduino/Micro:bit) chứa chip xử lý, có thể nạp các dòng lệnh để phân tích dữ liệu và điều khiển linh kiện ngoại vi. |
-| **5** | **A** | Kỹ thuật / Vật lý 6 | Theo công thức áp suất $p = \frac{F}{S}$, khi diện tích tiếp xúc $S$ càng lớn thì áp suất $p$ tác dụng lên mặt đất càng nhỏ, giúp xe không bị lún sâu vào bùn đất. |
-| **6** | **B** | Toán học 6 | Lượng nước tiêu thụ cho 4 cây là: $25 \times 4 = 100\text{ (ml)}$. Lượng nước còn lại trong bình: $450 - 100 = 350\text{ (ml)}$. |
-| **7** | **B** | Công nghệ 6 | Độ ẩm $18\% < 40\%$ nghĩa là đất đang thiếu nước nghiêm trọng. Hệ thống tự động thông minh sẽ ra lệnh kích hoạt bơm tưới ngay lập tức. |
-| **8** | **C** | Kỹ thuật 6 | Cánh tay que kem quay quanh một trục cố định (điểm tựa) để nâng vòi nước là ứng dụng điển hình của cơ cấu đòn bẩy. |
-| **9** | **B** | Toán học 6 | Phép cộng số tự nhiên / tỉ số phần trăm: $25\% + 38\% = 63\%$. |
-| **10** | **A** | STEM Xã hội | Dự án tận dụng rác thải nhựa sinh hoạt làm thành sản phẩm công nghệ có ích, lan tỏa thông điệp 3R (Reduce - Reuse - Recycle) để bảo vệ Trái Đất xanh. |
+| **1** | **B** | KHTN 6 (Vật lý) | Màu trắng phản xạ hầu hết ánh sáng mặt trời, hấp thụ ít nhiệt nhất nên mát nhất. |
+| **2** | **A** | Kỹ thuật / Toán 6 | Tam giác là hình có kết cấu hình học bất biến, không bị xô lệch khi chịu tải trọng. |
+| **3** | **B** | KHTN 6 (Vật lý) | Gió và mặt trời là nguồn năng lượng tái tạo sạch; than đá và dầu mỏ là nhiên liệu hóa thạch. |
+| **4** | **A** | Công nghệ 6 | Cảm biến hồng ngoại phát hiện chuyển động của người để gửi tín hiệu mở cửa tự động. |
+| **5** | **B** | Kỹ thuật 6 | Mũi tàu thuôn nhọn xé gió mượt mà, giảm tối đa ma sát và lực cản của không khí. |
+| **6** | **C** | Toán học 6 | Phép tính: $3\text{ lít} \times 7\text{ ngày} = 21\text{ lít}$. |
+| **7** | **A** | KHTN 6 (Cơ học) | Tấm ván đặt nghiêng (mặt phẳng nghiêng) giúp giảm lực kéo cần thiết khi nâng vật lên cao. |
+| **8** | **A** | KHTN 6 (Sinh học) | Diệp lục tố là sắc tố quang hợp đặc trưng trong tế bào thực vật. |
+| **9** | **B** | Tin học 6 | Thuật toán (Algorithm) là tập hợp các bước tuần tự để giải quyết một bài toán. |
+| **10** | **B** | STEM Môi trường | Tái sử dụng (Reuse) là dùng lại đồ vật cũ cho mục đích mới mà không vứt bỏ. |
